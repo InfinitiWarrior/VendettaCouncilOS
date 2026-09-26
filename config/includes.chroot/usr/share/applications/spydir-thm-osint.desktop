@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=THM OSINT Room
+Comment=TryHackMe OSINT room companion (web app)
+Exec=firefox-esr --new-window https://spydirbyte.github.io/thm-osint-room/
+Terminal=false
+Icon=firefox-esr
+Categories=Education;Security;Network;

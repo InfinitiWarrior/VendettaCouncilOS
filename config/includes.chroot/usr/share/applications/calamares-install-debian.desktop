@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Install Vendetta Council OS
+GenericName=System Installer
+Exec=calamares-install-debian
+Comment=Install Vendetta Council OS to this computer
+Keywords=calamares;system;install;vendetta;installer
+Icon=/usr/share/vendetta/sigil.png
+Terminal=false
+Categories=Qt;System;
+StartupWMClass=calamares
+StartupNotify=True

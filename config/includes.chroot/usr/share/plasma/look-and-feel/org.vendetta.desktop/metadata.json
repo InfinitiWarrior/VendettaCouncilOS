@@ -1,0 +1,15 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Vendetta Council"
+            }
+        ],
+        "Category": "",
+        "Description": "Vendetta Council OS default look and feel",
+        "Id": "org.vendetta.desktop",
+        "License": "GPLv2+",
+        "Name": "Vendetta"
+    }
+}

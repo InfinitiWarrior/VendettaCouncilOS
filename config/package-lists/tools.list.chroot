@@ -1,0 +1,10 @@
+# Vendetta Council OS — deps for the preinstalled spydirbyte toolkit.
+# The tools themselves are cloned + installed by hook 0130 (they aren't in
+# Debian). These are just what that hook needs at build time / runtime.
+git
+python3-venv
+python3-pip
+# spy-webster is TypeScript — pulls in the node toolchain. Drop these two if
+# you don't want it and delete spy-webster from the hook's TOOLS list.
+nodejs
+npm

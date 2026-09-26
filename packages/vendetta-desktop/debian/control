@@ -1,0 +1,37 @@
+Source: vendetta-desktop
+Section: metapackages
+Priority: optional
+Maintainer: Vendetta Council <os@vendettacouncil.example>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+
+Package: vendetta-desktop
+Architecture: all
+Depends: ${misc:Depends},
+ nala,
+ btop,
+ htop,
+ ripgrep,
+ fd-find,
+ bat,
+ fzf,
+ jq,
+ git,
+ curl,
+ wget,
+ tmux,
+ micro,
+ tree,
+ ncdu,
+ plocate,
+ zsh,
+ kitty,
+ fastfetch,
+ p7zip-full,
+ flatpak
+Description: Vendetta Council OS default toolset
+ Metapackage pulling the command-line and desktop tools shipped by default
+ on Vendetta Council OS on top of Debian and KDE Plasma.
+ .
+ Removing this package leaves a plain Debian + KDE system; the tools it
+ pulled in can then be removed with `apt autoremove`.

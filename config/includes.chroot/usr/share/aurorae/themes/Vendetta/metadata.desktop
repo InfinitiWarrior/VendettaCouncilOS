@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Vendetta
+Encoding=UTF-8
+Type=Service
+X-KDE-ServiceTypes=KWin/Decoration
+X-KDE-Library=org.kde.kwin.aurorae
+X-KDE-PluginInfo-Author=Vendetta Council
+X-KDE-PluginInfo-Name=Vendetta
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-License=GPL-2.0-or-later
+X-KDE-PluginInfo-Website=https://vendettacouncil.example

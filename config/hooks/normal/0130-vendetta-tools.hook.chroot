@@ -1,0 +1,80 @@
+#!/bin/sh
+# Vendetta Council OS — preinstall the spydirbyte security toolkit.
+# These tools aren't in Debian, so we clone them into /opt/spydir, drop all
+# their Python deps into one shared venv, and expose each as /usr/local/bin/<name>
+# plus a launcher-menu entry. Single source of truth: the TOOLS list below.
+#
+# A failed clone/build warns and skips — one broken repo must not kill the ISO.
+set -e
+
+BASE=/opt/spydir
+VENV=$BASE/venv
+GH=https://github.com/spydirbyte
+
+# Python tools: cloned, deps into the shared venv, entry auto-detected
+# (cli.py > app.py > run.py). Several app.py ones serve a local web dashboard
+# and print their URL on launch.
+TOOLS="spy-crack spy-geoint spy-kernel-triage spy-osint-suite spy-privacy-pulse
+spy-recon-mapper spy-threat-hunt spy-trail spy-vector spy-wraith spy-xray"
+
+install -d "$BASE"
+python3 -m venv "$VENV"
+"$VENV/bin/pip" install --no-input --quiet --upgrade pip || true
+
+for name in $TOOLS; do
+	dir="$BASE/$name"
+	git clone --depth 1 "$GH/$name.git" "$dir" 2>/dev/null || {
+		echo "W: clone failed, skipping $name"; continue; }
+
+	[ -f "$dir/requirements.txt" ] && \
+		"$VENV/bin/pip" install --no-input --quiet -r "$dir/requirements.txt" \
+			|| echo "W: deps failed for $name (installing anyway)"
+
+	entry=""
+	for e in cli.py app.py run.py; do
+		[ -f "$dir/$e" ] && { entry=$e; break; }
+	done
+	[ -n "$entry" ] || { echo "W: no entry point for $name, skipping wrapper"; continue; }
+
+	cat > "/usr/local/bin/$name" <<EOF
+#!/bin/sh
+exec "$VENV/bin/python" "$dir/$entry" "\$@"
+EOF
+	chmod +x "/usr/local/bin/$name"
+
+	title=$(echo "$name" | sed 's/^spy-/SPY-/; s/.*/\U&/')
+	cat > "/usr/share/applications/$name.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=$title
+Comment=spydirbyte security tool
+Exec=konsole -e $name
+Terminal=false
+Icon=utilities-terminal
+Categories=Security;Network;System;
+EOF
+done
+
+# spy-webster — TypeScript. Build to dist/ and run with node.
+if git clone --depth 1 "$GH/spy-webster.git" "$BASE/spy-webster" 2>/dev/null; then
+	( cd "$BASE/spy-webster" && npm ci --silent && npm run build --if-present ) \
+		&& cat > /usr/local/bin/spy-webster <<EOF
+#!/bin/sh
+exec node "$BASE/spy-webster/dist/cli.js" "\$@"
+EOF
+	if [ -f /usr/local/bin/spy-webster ]; then
+		chmod +x /usr/local/bin/spy-webster
+		cat > /usr/share/applications/spy-webster.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=SPY-WEBSTER
+Comment=spydirbyte web checker
+Exec=konsole -e spy-webster
+Terminal=false
+Icon=utilities-terminal
+Categories=Security;Network;
+EOF
+	fi
+else
+	echo "W: spy-webster clone/build failed, skipping"
+fi

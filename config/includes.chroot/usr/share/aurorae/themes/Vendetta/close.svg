@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1">
+  <g id="active-center" stroke="#576768" stroke-width="1" stroke-linecap="square">
+    <line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/>
+  </g>
+  <g id="inactive-center" stroke="#3B4748" stroke-width="1" stroke-linecap="square">
+    <line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/>
+  </g>
+  <g id="hover-center" stroke="#D63C48" stroke-width="1" stroke-linecap="square">
+    <line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/>
+  </g>
+  <g id="pressed-center" stroke="#7CFFF3" stroke-width="1" stroke-linecap="square">
+    <line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/>
+  </g>
+</svg>

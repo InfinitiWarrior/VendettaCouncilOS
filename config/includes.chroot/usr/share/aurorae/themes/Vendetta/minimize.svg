@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1">
+  <line id="active-center"   x1="3" y1="12" x2="13" y2="12" stroke="#576768" stroke-width="1"/>
+  <line id="inactive-center" x1="3" y1="12" x2="13" y2="12" stroke="#3B4748" stroke-width="1"/>
+  <line id="hover-center"    x1="3" y1="12" x2="13" y2="12" stroke="#A9C4C6" stroke-width="1"/>
+  <line id="pressed-center"  x1="3" y1="12" x2="13" y2="12" stroke="#7CFFF3" stroke-width="1"/>
+</svg>

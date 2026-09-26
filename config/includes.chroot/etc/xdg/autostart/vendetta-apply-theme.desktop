@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Vendetta theme first-run apply
+Exec=/usr/lib/vendetta-apply-theme
+OnlyShowIn=KDE;
+NoDisplay=true

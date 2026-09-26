@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1">
+  <g id="active-center" fill="none" stroke="#576768" stroke-width="1">
+    <rect x="3" y="5" width="7" height="7"/><path d="M6 5 V3 H13 V10 H11"/>
+  </g>
+  <g id="inactive-center" fill="none" stroke="#3B4748" stroke-width="1">
+    <rect x="3" y="5" width="7" height="7"/><path d="M6 5 V3 H13 V10 H11"/>
+  </g>
+  <g id="hover-center" fill="none" stroke="#A9C4C6" stroke-width="1">
+    <rect x="3" y="5" width="7" height="7"/><path d="M6 5 V3 H13 V10 H11"/>
+  </g>
+  <g id="pressed-center" fill="none" stroke="#7CFFF3" stroke-width="1">
+    <rect x="3" y="5" width="7" height="7"/><path d="M6 5 V3 H13 V10 H11"/>
+  </g>
+</svg>

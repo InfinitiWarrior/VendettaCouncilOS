@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1">
+  <rect id="active-center"   x="4" y="4" width="8" height="8" fill="none" stroke="#576768" stroke-width="1"/>
+  <rect id="inactive-center" x="4" y="4" width="8" height="8" fill="none" stroke="#3B4748" stroke-width="1"/>
+  <rect id="hover-center"    x="4" y="4" width="8" height="8" fill="none" stroke="#A9C4C6" stroke-width="1"/>
+  <rect id="pressed-center"  x="4" y="4" width="8" height="8" fill="none" stroke="#7CFFF3" stroke-width="1"/>
+</svg>

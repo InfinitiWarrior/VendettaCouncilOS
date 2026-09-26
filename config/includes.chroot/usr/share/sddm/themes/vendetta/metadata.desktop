@@ -1,0 +1,9 @@
+[SddmGreeterTheme]
+Name=Vendetta
+Description=Vendetta Council OS login
+Author=Vendetta Council
+License=GPL-2.0-or-later
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf

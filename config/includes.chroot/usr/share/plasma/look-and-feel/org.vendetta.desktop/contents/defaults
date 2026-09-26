@@ -1,0 +1,53 @@
+[KSplash]
+Theme=org.kde.Breeze
+
+[Wallpaper]
+Image=/usr/share/wallpapers/Vendetta/
+
+[kcminputrc][Mouse]
+cursorTheme=breeze_cursors
+
+[kdeglobals][General]
+ColorScheme=Vendetta
+AccentColor=55,230,216
+widgetStyle=kvantum
+font=Chakra Petch,10,-1,5,50,0,0,0,0,0,Regular
+fixed=JetBrains Mono,11,-1,5,50,0,0,0,0,0,Regular
+menuFont=Chakra Petch,10,-1,5,50,0,0,0,0,0,Regular
+toolBarFont=Chakra Petch,10,-1,5,50,0,0,0,0,0,Regular
+smallestReadableFont=Chakra Petch,8,-1,5,50,0,0,0,0,0,Regular
+
+[kdeglobals][WM]
+activeFont=Chakra Petch,10,-1,5,50,0,0,0,0,0,Regular
+
+[kdeglobals][Icons]
+Theme=Papirus-Dark
+
+[kdeglobals][KDE]
+widgetStyle=kvantum
+GTKStyle=Breeze
+
+[kwinrc][org.kde.kdecoration2]
+library=org.kde.breeze
+theme=Breeze
+ButtonsOnLeft=M
+ButtonsOnRight=IAX
+BorderSize=None
+
+[kwinrc][org.kde.kdecoration3]
+library=org.kde.breeze
+theme=Breeze
+ButtonsOnLeft=M
+ButtonsOnRight=IAX
+BorderSize=None
+
+[breezerc][Windeco]
+DrawBackgroundGradient=false
+DrawTitleBarSeparator=false
+TitleAlignment=AlignLeft
+
+[plasmarc][Theme]
+name=Vendetta
+
+[konsolerc][Desktop Entry]
+DefaultProfile=Vendetta.profile

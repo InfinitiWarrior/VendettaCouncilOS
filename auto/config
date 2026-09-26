@@ -1,0 +1,19 @@
+#!/bin/sh
+# Vendetta Council OS — live-build configuration.
+# `lb config` runs this file. Edit knobs here, not in config/*.
+set -e
+
+lb config noauto \
+	--mode debian \
+	--distribution trixie \
+	--architectures amd64 \
+	--archive-areas "main contrib non-free non-free-firmware" \
+	--apt-recommends true \
+	--debian-installer live \
+	--debian-installer-gui true \
+	--bootappend-live "boot=live components locales=en_US.UTF-8 keyboard-layouts=us hostname=vendetta username=vendetta user-fullname=Vendetta quiet splash loglevel=3" \
+	--iso-application "Vendetta Council OS" \
+	--iso-publisher "Vendetta Council" \
+	--iso-volume "VCOS" \
+	--memtest none \
+	"${@}"

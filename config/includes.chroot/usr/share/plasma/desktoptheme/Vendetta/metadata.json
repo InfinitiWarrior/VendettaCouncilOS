@@ -1,0 +1,13 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Vendetta Council"
+            }
+        ],
+        "Id": "Vendetta",
+        "License": "GPL-2.0-or-later",
+        "Name": "Vendetta"
+    },
+    "X-Plasma-API": "5.0"
+}

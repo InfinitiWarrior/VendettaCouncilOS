@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Vendetta Council
+Description=Vendetta Council OS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/vendetta
+ScriptFile=/usr/share/plymouth/themes/vendetta/vendetta.script

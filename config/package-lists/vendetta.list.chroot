@@ -1,0 +1,4 @@
+# Vendetta Council OS — default toolset.
+# The actual list lives in packages/vendetta-desktop/debian/control so users
+# can `apt remove vendetta-desktop` to get a plain KDE system back.
+vendetta-desktop
