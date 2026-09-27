@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SPY-RECON-MAPPER
+Comment=Shodan recon mapper (web app)
+Exec=spydir-webapp spy-recon-mapper 5000
+Terminal=false
+Icon=firefox-esr
+Categories=Security;Network;

@@ -1,0 +1,11 @@
+[Unit]
+Description=Seed Vendetta default avatar for the primary user
+After=systemd-user-sessions.service
+Before=sddm.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/vendetta-seed-avatar
+
+[Install]
+WantedBy=multi-user.target

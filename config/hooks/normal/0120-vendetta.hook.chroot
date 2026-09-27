@@ -6,6 +6,23 @@ set -e
 
 fc-cache -f >/dev/null 2>&1 || true
 
+# --- OS identity: nothing in normal use should say "Debian" ---
+# Our os-release ships at /usr/lib/os-release (includes.chroot), but base-files
+# leaves the stock Debian /etc/os-release — which is what fastfetch, lsb_release
+# and the GUIs actually read. Point /etc at ours (the Debian standard is for
+# /etc/os-release to be a symlink into /usr/lib anyway).
+ln -sf ../usr/lib/os-release /etc/os-release
+# lsb_release falls back to os-release when there's no /etc/lsb-release override.
+rm -f /etc/lsb-release
+# dpkg vendor string (dpkg-vendor, shown by some package GUIs).
+if [ -d /etc/dpkg/origins ]; then
+	cat > /etc/dpkg/origins/default <<'EOF'
+Vendor: Vendetta Council OS
+Vendor-URL: https://vendettacouncil.example/
+Bugs: https://vendettacouncil.example/bugs
+EOF
+fi
+
 # --- Plymouth ---
 plymouth-set-default-theme -R vendetta 2>/dev/null \
 	|| plymouth-set-default-theme vendetta \

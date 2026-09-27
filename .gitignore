@@ -38,3 +38,12 @@
 
 # generated wallpaper scratch (regenerate: brand/make-wallpapers.sh)
 /assets/
+
+# Claude Code local session/runtime state
+/.claude/
+
+# editor / OS junk
+*.swp
+*~
+.DS_Store
+*.orig

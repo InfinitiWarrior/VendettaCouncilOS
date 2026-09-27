@@ -1,0 +1,40 @@
+#!/bin/sh
+# Launch a spydir Flask dashboard and open it in the browser.
+#   spydir-webapp <tool-name> <port>
+#
+# The tools live read-only under /opt/spydir (root-owned), but each dashboard
+# writes its SQLite DB + uploads into its OWN dir (BASE_DIR/data/...). So on
+# first launch we copy the app into the user's home once and run it from there,
+# where it can write. The shared venv under /opt stays read-only.
+#
+# Safe to run repeatedly — a second click just reopens the running server.
+set -eu
+name=$1; port=$2
+src=/opt/spydir/$name
+py=/opt/spydir/venv/bin/python
+data="${XDG_DATA_HOME:-$HOME/.local/share}/spydir"
+app="$data/$name"
+url="http://127.0.0.1:$port"
+
+# per-user writable copy (code only — deps come from the shared venv)
+if [ ! -e "$app/app.py" ]; then
+	mkdir -p "$data"
+	cp -a "$src" "$app"
+fi
+
+# port already open? (no curl in the image — probe with python's socket)
+up() { "$py" - "$port" <<'PY'
+import socket,sys
+try: socket.create_connection(("127.0.0.1",int(sys.argv[1])),0.4).close()
+except OSError: sys.exit(1)
+PY
+}
+
+if ! up; then
+	# DEBUG=0 keeps Flask's reloader from double-forking under a detached start.
+	( cd "$app" && HOST=127.0.0.1 PORT="$port" DEBUG=0 "$py" app.py \
+		>"$app/server.log" 2>&1 & )
+	i=0; while [ $i -lt 40 ]; do up && break; sleep 0.5; i=$((i+1)); done
+fi
+
+exec firefox-esr --new-window "$url"
