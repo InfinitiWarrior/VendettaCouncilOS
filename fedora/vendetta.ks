@@ -25,6 +25,7 @@ slick-greeter
 git
 python3
 python3-pip
+python3-pillow
 nodejs
 npm
 # --- theming ---

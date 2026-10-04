@@ -18,18 +18,21 @@ install -d "$BASE"
 # use the resolved concrete binary, and make sure /proc is mounted.
 mountpoint -q /proc 2>/dev/null || mount -t proc proc /proc 2>/dev/null || true
 PY=$(readlink -f "$(command -v python3)" 2>/dev/null); [ -x "$PY" ] || PY=/usr/bin/python3
-# --system-site-packages: Pillow has no wheel for Arch's Python yet and won't
-# compile here, so the venv borrows pacman's python-pillow.
+# --system-site-packages: Pillow has no wheel for the newest Python and won't
+# compile here, so the venv borrows the distro's Pillow package (this script is
+# shared with the Fedora edition).
 "$PY" -m venv --system-site-packages "$VENV" || python3 -m venv --system-site-packages "$VENV"
 "$VENV/bin/pip" install --no-input --quiet --upgrade pip || true
+# Only skip the tools' own Pillow pins when the distro one is really there.
+if "$VENV/bin/python" -c 'import PIL' 2>/dev/null; then SKIP='^pillow'; else SKIP='a^'; fi
 
 for name in $TOOLS; do
 	dir="$BASE/$name"
 	git clone --depth 1 "$GH/$name.git" "$dir" 2>&1 || { echo "W: clone failed, skipping $name"; continue; }
-	# Pillow comes from pacman (see above); a pinned Pillow here would be built
+	# Pillow comes from the distro (see above); a pinned Pillow here would be built
 	# from source and take the tool's other deps down with it.
 	[ -f "$dir/requirements.txt" ] && \
-		grep -vi '^pillow' "$dir/requirements.txt" | \
+		grep -vi "$SKIP" "$dir/requirements.txt" | \
 		"$VENV/bin/pip" install --no-input --quiet -r /dev/stdin \
 			|| echo "W: deps failed for $name (installing anyway)"
 	entry=""
