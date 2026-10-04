@@ -8,6 +8,10 @@
 # and its own %include chain (fedora-live-base.ks, fedora-kde-common.ks) resolve.
 %include fedora-live-kde.ks
 
+# The spin's default root image leaves under 1 GB free once our packages are in,
+# and the first-boot toolkit install then fills the live system completely.
+part / --size 12288 --fstype ext4
+
 # The upstream kickstarts carry no repo lines (koji injects them at compose
 # time), so livecd-creator needs ours.
 repo --name=fedora  --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-43&arch=$basearch

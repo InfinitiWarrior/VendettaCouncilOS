@@ -2,7 +2,7 @@
 Type=Application
 Name=Spydir OpSec Course
 Comment=Interactive OpSec course (web app)
-Exec=firefox-esr --new-window https://spydirbyte.github.io/spydir-opsec/
+Exec=xdg-open https://spydirbyte.github.io/spydir-opsec/
 Terminal=false
 Icon=firefox-esr
 Categories=Education;Security;Network;

@@ -34,7 +34,7 @@ install -m 0755 /usr/share/applications/vendetta-install.desktop /home/vendetta/
 chown -R vendetta:vendetta /home/vendetta
 
 # Boot straight to the Vendetta SDDM greeter, autologin into the live Plasma
-# (X11) session (autologin conf shipped in /etc/sddm.conf.d).
+# (Wayland) session (autologin conf shipped in /etc/sddm.conf.d).
 systemctl set-default graphical.target
 systemctl enable sddm.service
 # NetworkManager owns the network — turn off releng's systemd-networkd/iwd so the

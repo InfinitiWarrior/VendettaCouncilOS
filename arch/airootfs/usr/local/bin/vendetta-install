@@ -1,5 +1,13 @@
 #!/bin/sh
-# Launch Calamares as root from the live desktop. pkexec keeps DISPLAY/XAUTHORITY
-# and the live polkit rule (49-vendetta-live) grants the `vendetta` user YES, so
-# no password prompt. The live session is X11 so the root GUI can reach the display.
+# Launch Calamares as root from the live desktop. The live polkit rule
+# (49-vendetta-live) grants the live user YES, so there is no password prompt.
+# pkexec scrubs the environment, so the display has to be handed over by hand:
+# the Wayland socket on a Wayland session (Plasma is Wayland-only on current
+# Arch and Fedora), otherwise the X11 display.
+if [ -n "$WAYLAND_DISPLAY" ]; then
+	sock=$WAYLAND_DISPLAY
+	case "$sock" in /*) ;; *) sock="$XDG_RUNTIME_DIR/$sock" ;; esac
+	exec pkexec env WAYLAND_DISPLAY="$sock" XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" \
+		QT_QPA_PLATFORM=wayland calamares -d
+fi
 exec pkexec env DISPLAY="${DISPLAY:-:0}" XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}" calamares -d

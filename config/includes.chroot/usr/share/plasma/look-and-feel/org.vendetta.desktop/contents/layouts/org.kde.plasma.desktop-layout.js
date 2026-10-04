@@ -50,7 +50,7 @@ tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", [
     "applications:systemsettings.desktop",
     "applications:org.kde.dolphin.desktop",
-    "applications:firefox-esr.desktop",
+    "preferred://browser",
     "applications:org.kde.konsole.desktop"
 ]);
 tasks.writeConfig("showOnlyCurrentDesktop", false);
