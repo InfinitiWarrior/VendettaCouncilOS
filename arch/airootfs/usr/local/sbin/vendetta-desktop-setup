@@ -24,11 +24,18 @@ KDE="plasma-desktop plasma-workspace plasma-nm plasma-pa powerdevil systemsettin
 
 echo "=== vendetta-desktop-setup '$id' $(date -u) ===" >> "$L"
 
+# The live image keeps pacman's keyring on a tmpfs, so the installed system has
+# none yet and every package would fail signature checks.
+if [ ! -d /etc/pacman.d/gnupg ]; then
+    pacman-key --init >> "$L" 2>&1
+    pacman-key --populate archlinux >> "$L" 2>&1
+fi
+
 PAC="pacman -S --needed --noconfirm"
 case "$id" in
     kde|"") echo "KDE (or no choice) — nothing to install; done" >> "$L"; echo "DONE $(date -u)" >> "$L"; exit 0 ;;
     i3)       pkgs="xorg-server xorg-xinit i3-wm i3status i3lock rofi feh dunst picom network-manager-applet"; sentinel="i3-wm" ;;
-    hyprland) pkgs="hyprland waybar wofi mako swww grim slurp xdg-desktop-portal-hyprland polkit-kde-agent network-manager-applet"; sentinel="hyprland" ;;
+    hyprland) pkgs="hyprland waybar wofi mako awww grim slurp xdg-desktop-portal-hyprland polkit-kde-agent network-manager-applet"; sentinel="hyprland" ;;
     sway)     pkgs="sway swaybg swayidle swaylock waybar wofi mako grim slurp network-manager-applet"; sentinel="sway" ;;
     xfce)     pkgs="xorg-server xorg-xinit xfce4 xfce4-terminal xfce4-whiskermenu-plugin network-manager-applet"; sentinel="xfce4-session" ;;
     gnome)    pkgs="gnome-shell gnome-terminal gnome-control-center nautilus gnome-tweaks"; sentinel="gnome-shell" ;;
@@ -47,6 +54,10 @@ if pacman -Qq "$sentinel" >/dev/null 2>&1; then
     [ -n "$rm_list" ] && pacman -Rns --noconfirm $rm_list >> "$L" 2>&1
 
     case "$id" in
+        hyprland)
+            # Arch renamed swww to awww; the shared Hyprland config still calls swww.
+            ln -sf /usr/bin/awww /usr/local/bin/swww
+            ln -sf /usr/bin/awww-daemon /usr/local/bin/swww-daemon ;;
         gnome|cinnamon)
             # Vendetta dark/wallpaper GTK defaults come from /etc/dconf (cloned in).
             echo "--- compiling dconf defaults ---" >> "$L"

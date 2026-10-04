@@ -13,14 +13,21 @@ echo "=== vendetta-desktop-setup '$id' $(date -u) ===" >> "$L"
 DNF="dnf -y --setopt=install_weak_deps=False"
 case "$id" in
     kde|"") echo "KDE (or no choice) — nothing to install; done" >> "$L"; echo "DONE $(date -u)" >> "$L"; exit 0 ;;
-    i3)       pkgs="xorg-x11-server-Xorg xorg-x11-xinit i3 i3status i3lock rofi feh dunst picom NetworkManager-applet"; sentinel="i3" ;;
-    hyprland) pkgs="hyprland waybar wofi mako swww grim slurp NetworkManager-applet"; sentinel="hyprland" ;;
-    sway)     pkgs="sway swaybg waybar wofi mako grim slurp foot NetworkManager-applet"; sentinel="sway" ;;
+    i3)       pkgs="xorg-x11-server-Xorg xorg-x11-xinit i3 i3status i3lock rofi feh dunst picom network-manager-applet"; sentinel="i3" ;;
+    hyprland) pkgs="hyprland xdg-desktop-portal-hyprland waybar wofi mako swww grim slurp network-manager-applet"; sentinel="hyprland" ;;
+    sway)     pkgs="sway swaybg waybar wofi mako grim slurp foot network-manager-applet"; sentinel="sway" ;;
     xfce)     pkgs="@xfce-desktop-environment xfce4-terminal"; sentinel="xfce4-session" ;;
     gnome)    pkgs="gnome-shell gnome-terminal nautilus gnome-control-center gnome-tweaks"; sentinel="gnome-shell" ;;
     cinnamon) pkgs="cinnamon nemo gnome-terminal"; sentinel="cinnamon" ;;
     *) echo "unknown desktop id '$id' — leaving KDE in place" >> "$L"; exit 0 ;;
 esac
+
+# Fedora does not package Hyprland (or swww); they come from this COPR, which is
+# only added when Hyprland is the chosen desktop.
+if [ "$id" = hyprland ]; then
+    $DNF install dnf5-plugins >> "$L" 2>&1
+    dnf -y copr enable sdegler/hyprland >> "$L" 2>&1
+fi
 
 echo "--- installing: $pkgs ---" >> "$L"
 $DNF install $pkgs >> "$L" 2>&1
