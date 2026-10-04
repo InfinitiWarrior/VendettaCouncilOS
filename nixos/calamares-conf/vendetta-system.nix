@@ -148,6 +148,9 @@ in
   ++ lib.optionals (swayEnabled || hyprlandEnabled) (with pkgs; [ waybar mako wofi networkmanagerapplet ])
   ++ lib.optional hyprlandEnabled pkgs.swww;
   fonts.packages = [ chakra-petch pkgs.jetbrains-mono ];
+  # GNOME Console can't take a colour scheme; drop it so the themed
+  # gnome-terminal is the terminal GNOME offers.
+  environment.gnome.excludePackages = lib.mkIf gnomeEnabled [ pkgs.gnome-console ];
 
   # spydir CLI wrappers (spy-crack, …) land in /opt/spydir/bin on first boot.
   environment.extraInit = ''
@@ -342,6 +345,22 @@ in
         "backdrop/screen0/monitor0/workspace0/image-style" = 5;
         "backdrop/screen0/monitorVirtual-1/workspace0/last-image" = wallpaperImg;
         "backdrop/screen0/monitorVirtual-1/workspace0/image-style" = 5;
+      };
+      # xfce4-terminal: same palette as kitty/Konsole.
+      xfce4-terminal = {
+        "font-use-system" = false;
+        "font-name" = "JetBrains Mono 11";
+        "color-use-theme" = false;
+        "color-background" = "#04090A";
+        "color-foreground" = "#DCECEB";
+        "color-cursor-use-default" = false;
+        "color-cursor" = "#37E6D8";
+        "color-cursor-foreground" = "#04090A";
+        "color-selection-use-default" = false;
+        "color-selection-background" = "#37E6D8";
+        "color-selection" = "#04090A";
+        "color-palette" = "#04090A;#D63C48;#37E6D8;#A9C4C6;#36B2C6;#78C8DC;#37E6D8;#A9C4C6;#1B2A2C;#E65C66;#7CFFF3;#CFE6E6;#7CFFF3;#A0E8F0;#7CFFF3;#CFE6E6";
+        "misc-cursor-shape" = "TERMINAL_CURSOR_SHAPE_IBEAM";
       };
     };
   };
