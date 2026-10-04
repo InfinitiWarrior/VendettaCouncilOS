@@ -1,0 +1,7 @@
+# Vendetta Council OS (Arch) — records the bootloader choice for grubcfg.
+---
+type:       "job"
+name:       "vendettaboot"
+interface:  "python"
+script:     "main.py"
+noconfig:   true
