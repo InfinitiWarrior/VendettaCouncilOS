@@ -61,6 +61,11 @@ exec docker run --rm --privileged \
 		chmod +x /tmp/overlay/usr/local/bin/vendetta-* \
 			/tmp/overlay/usr/bin/vendetta-tools 2>/dev/null || true
 
+		# The overlay is copied from the host checkout, so it is owned by the
+		# host user; laid over the image as-is it would hand /, /etc and /usr
+		# to the first user created on the installed system.
+		chown -R 0:0 /tmp/overlay
+
 		# --- build ---
 		rm -rf out; mkdir -p out; cd out
 		livecd-creator --verbose \

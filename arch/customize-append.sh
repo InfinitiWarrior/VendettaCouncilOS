@@ -27,6 +27,13 @@ sh /root/spydir-setup.sh || echo "W: spydir-setup failed"
 # Plymouth boot splash.
 plymouth-set-default-theme vendetta 2>/dev/null || true
 
+# Arch's stock prompt is uncoloured, which leaves the themed terminals looking
+# plain; use the same coloured prompt the Debian edition gets (new users inherit
+# it from /etc/skel).
+cat >> /etc/skel/.bashrc <<'PROMPT'
+PS1='\[\e[1;32m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ '
+PROMPT
+
 # Live user: vendetta / vendetta, passwordless sudo (rule shipped in /etc).
 groupadd -r autologin 2>/dev/null || true
 useradd -m -G wheel,autologin,video,audio,network,storage,power -s /bin/bash vendetta 2>/dev/null || true
