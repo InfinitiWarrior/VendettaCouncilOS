@@ -146,7 +146,7 @@ in
   # The helpers the WM configs exec (bar, launcher, notifications, wallpaper).
   ++ lib.optionals i3Enabled (with pkgs; [ feh picom dunst rofi i3status networkmanagerapplet ])
   ++ lib.optionals (swayEnabled || hyprlandEnabled) (with pkgs; [ waybar mako wofi networkmanagerapplet ])
-  ++ lib.optional hyprlandEnabled pkgs.swww;
+  ++ lib.optionals hyprlandEnabled (with pkgs; [ swww adwaita-icon-theme ]);
   fonts.packages = [ chakra-petch pkgs.jetbrains-mono ];
   # GNOME Console can't take a colour scheme; drop it so the themed
   # gnome-terminal is the terminal GNOME offers.
@@ -170,6 +170,13 @@ in
   # Sway/Hyprland are Wayland-only, so the generated config never turns X on,
   # but the graphical login managers (LightDM always, SDDM's greeter) need it.
   services.xserver.enable = lib.mkIf (swayEnabled || hyprlandEnabled) true;
+  # LightDM starts a Wayland session a moment BEFORE it tears down the greeter's
+  # X server; Hyprland launched in that window comes up with no input devices at
+  # all (no keyboard, no mouse). Hold the session back until X has let go.
+  # NOTE: fixed delay, not a real wait-for-seat; X is gone ~0.4s after login.
+  services.xserver.displayManager.sessionCommands = lib.mkIf lightdmEnabled ''
+    [ "$XDG_SESSION_TYPE" = wayland ] && sleep 3
+  '';
 
   services.displayManager.sddm.package = lib.mkForce pkgs.kdePackages.sddm;
   services.displayManager.sddm.settings.Theme.Current = "vendetta";
