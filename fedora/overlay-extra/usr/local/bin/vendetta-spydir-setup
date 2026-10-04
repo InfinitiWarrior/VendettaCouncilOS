@@ -1,0 +1,11 @@
+#!/bin/sh
+# First-boot wrapper for the spydirbyte toolkit install. Runs the shared setup
+# script, and only marks completion (stopping future runs) once it actually
+# produced a venv + at least one tool — so a first boot without network just
+# retries next boot instead of marking a broken install done.
+[ -e /opt/spydir/.installed ] && exit 0
+sh /usr/local/lib/vendetta/spydir-setup.sh || true
+if [ -x /opt/spydir/venv/bin/python ] && ls /usr/local/bin/spy-* >/dev/null 2>&1; then
+    touch /opt/spydir/.installed
+fi
+exit 0

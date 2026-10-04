@@ -18,8 +18,6 @@ rm -f /etc/lsb-release
 if [ -d /etc/dpkg/origins ]; then
 	cat > /etc/dpkg/origins/default <<'EOF'
 Vendor: Vendetta Council OS
-Vendor-URL: https://vendettacouncil.example/
-Bugs: https://vendettacouncil.example/bugs
 EOF
 fi
 

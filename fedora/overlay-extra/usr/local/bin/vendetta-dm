@@ -1,0 +1,19 @@
+#!/bin/sh
+# Vendetta Council OS (Fedora) — switch the active login manager, then reboot.
+#   sudo vendetta-dm <sddm|lightdm|greetd>
+# All three ship preinstalled; this flips which systemd unit owns
+# display-manager.service. No-ops safely if the chosen one isn't installed.
+set -eu
+dm="${1:-}"
+case "$dm" in
+    sddm)    bin=/usr/bin/sddm ;;
+    lightdm) bin=/usr/sbin/lightdm ;;
+    greetd)  bin=/usr/bin/greetd ;;
+    *) echo "usage: vendetta-dm <sddm|lightdm|greetd>"; exit 1 ;;
+esac
+[ "$(id -u)" -eq 0 ] || { echo "run this as root (sudo vendetta-dm $dm)"; exit 1; }
+[ -x "$bin" ] || { echo "'$dm' is not installed; leaving the current login manager."; exit 0; }
+for d in sddm lightdm greetd; do systemctl disable "$d.service" >/dev/null 2>&1 || true; done
+ln -sf "/usr/lib/systemd/system/$dm.service" /etc/systemd/system/display-manager.service
+systemctl enable "$dm.service" >/dev/null 2>&1 || true
+echo "Login manager set to '$dm'. Reboot to use it."

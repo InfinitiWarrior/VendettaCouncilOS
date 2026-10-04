@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SPY-PRIVACY-PULSE
+Comment=Privacy checkup dashboard (web app)
+Exec=spydir-webapp spy-privacy-pulse 5002
+Terminal=false
+Icon=firefox-esr
+Categories=Security;Network;

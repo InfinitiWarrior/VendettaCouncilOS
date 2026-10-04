@@ -1,0 +1,16 @@
+[Unit]
+Description=Vendetta Council OS — install the spydirbyte toolkit (first boot)
+# The toolkit clones 12 git repos + builds a Python venv, which needs real
+# networking/DNS. Fedora's livecd build chroot has neither reliably, so we do it
+# on first boot instead (live session and installed system both run this once).
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/opt/spydir/.installed
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/vendetta-spydir-setup
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

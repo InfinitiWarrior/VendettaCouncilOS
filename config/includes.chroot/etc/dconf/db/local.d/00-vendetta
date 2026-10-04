@@ -1,0 +1,45 @@
+# Vendetta Council OS — dark + wallpaper + accent defaults (GNOME & Cinnamon).
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+gtk-theme='Adwaita-dark'
+accent-color='teal'
+font-name='Chakra Petch 10'
+
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/wallpapers/Vendetta/contents/images/1920x1080.png'
+picture-uri-dark='file:///usr/share/wallpapers/Vendetta/contents/images/1920x1080.png'
+picture-options='zoom'
+primary-color='#04090A'
+
+[org/gnome/shell]
+disabled-extensions=@as []
+
+[org/cinnamon/desktop/background]
+picture-uri='file:///usr/share/wallpapers/Vendetta/contents/images/1920x1080.png'
+picture-options='zoom'
+
+[org/cinnamon/desktop/interface]
+gtk-theme='Adwaita-dark'
+icon-theme='Papirus-Dark'
+font-name='Chakra Petch 10'
+
+[org/x/desktop/wm/preferences]
+theme='Adwaita-dark'
+
+# gnome-terminal / cinnamon terminal — Vendetta near-black + cyan
+[org/gnome/terminal/legacy/profiles:]
+default='b1dcc9dd-5262-4d8d-a863-c897e6d979b9'
+list=['b1dcc9dd-5262-4d8d-a863-c897e6d979b9']
+
+[org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
+visible-name='Vendetta'
+use-theme-colors=false
+use-system-font=false
+font='JetBrains Mono 11'
+background-color='#04090A'
+foreground-color='#CFE6E6'
+bold-color-same-as-fg=true
+cursor-colors-set=true
+cursor-background-color='#37E6D8'
+cursor-foreground-color='#04090A'
+palette=['#04090A', '#D63C48', '#37E6D8', '#E6C437', '#3C7AD6', '#9B59B6', '#37E6D8', '#CFE6E6', '#5A6E70', '#D63C48', '#37E6D8', '#E6C437', '#3C7AD6', '#9B59B6', '#37E6D8', '#FFFFFF']

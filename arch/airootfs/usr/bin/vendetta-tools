@@ -1,0 +1,9 @@
+#!/bin/sh
+# What Vendetta Council OS ships on top of base Arch + KDE Plasma.
+echo "Vendetta Council OS — preinstalled extras:"
+echo "  spydirbyte toolkit under /opt/spydir (web apps in the menu, CLI in \$PATH)"
+echo "  login managers: sddm (default), lightdm, greetd  —  switch: sudo vendetta-dm <name>"
+echo "  CLI: fastfetch btop ripgrep fd bat fzf micro tmux zsh nmap kitty"
+echo
+echo "spydir CLI tools in PATH:"
+for t in /usr/local/bin/spy-* ; do [ -e "$t" ] && echo "  $(basename "$t")"; done

@@ -1,0 +1,5 @@
+#!/bin/sh
+# Launch Calamares as root from the live desktop. pkexec keeps DISPLAY/XAUTHORITY
+# and the live polkit rule (49-vendetta-live) grants the `vendetta` user YES, so
+# no password prompt. The live session is X11 so the root GUI can reach the display.
+exec pkexec env DISPLAY="${DISPLAY:-:0}" XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}" calamares -d

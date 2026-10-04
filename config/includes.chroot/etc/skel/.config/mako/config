@@ -1,0 +1,9 @@
+font=Chakra Petch 10
+background-color=#0A1416
+text-color=#CFE6E6
+border-color=#37E6D8
+border-size=2
+border-radius=0
+default-timeout=5000
+padding=10
+width=340

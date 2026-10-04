@@ -1,0 +1,6 @@
+show=drun
+prompt=search
+width=640
+lines=8
+insensitive=true
+allow_images=true

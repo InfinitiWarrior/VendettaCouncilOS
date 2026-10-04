@@ -1,0 +1,60 @@
+#!/bin/sh
+# Vendetta Council OS (Arch) — install the chosen desktop and strip KDE for a
+# lean system. Run by Calamares contextualprocess IN THE TARGET, keyed on the
+# packagechooser `desktop` selection. The legacy packagechooser method only
+# records the choice; the install + KDE removal happen here.
+#
+# Unlike the Debian build, the three login managers are PREINSTALLED in the
+# image (sddm/lightdm+slick-greeter/greetd+tuigreet), so this script only
+# handles the desktop. KDE is purged only if the chosen DE actually installed,
+# so a failed (offline) install leaves a working KDE rather than no desktop.
+#
+# Logs to /var/log/vendetta-install.log on the installed system.
+set -u
+id="${1:-}"
+L=/var/log/vendetta-install.log
+
+# The curated KDE set we ship — mirror of packages.x86_64.extra. Only the ones
+# actually installed are removed (pacman errors on absent targets), and -Rns
+# keeps any dep still required by a package we keep (sddm, networkmanager...).
+KDE="plasma-desktop plasma-workspace plasma-nm plasma-pa powerdevil systemsettings
+     kscreen plasma-systemmonitor bluedevil kde-gtk-config kdeplasma-addons
+     kinfocenter kwin konsole dolphin ark kate gwenview okular spectacle discover
+     breeze-gtk plasma-workspace-wallpapers kscreenlocker milou"
+
+echo "=== vendetta-desktop-setup '$id' $(date -u) ===" >> "$L"
+
+PAC="pacman -S --needed --noconfirm"
+case "$id" in
+    kde|"") echo "KDE (or no choice) — nothing to install; done" >> "$L"; echo "DONE $(date -u)" >> "$L"; exit 0 ;;
+    i3)       pkgs="xorg-server xorg-xinit i3-wm i3status i3lock rofi feh dunst picom network-manager-applet"; sentinel="i3-wm" ;;
+    hyprland) pkgs="hyprland waybar wofi mako swww grim slurp xdg-desktop-portal-hyprland polkit-kde-agent network-manager-applet"; sentinel="hyprland" ;;
+    sway)     pkgs="sway swaybg swayidle swaylock waybar wofi mako grim slurp network-manager-applet"; sentinel="sway" ;;
+    xfce)     pkgs="xorg-server xorg-xinit xfce4 xfce4-terminal xfce4-whiskermenu-plugin network-manager-applet"; sentinel="xfce4-session" ;;
+    gnome)    pkgs="gnome-shell gnome-terminal gnome-control-center nautilus gnome-tweaks"; sentinel="gnome-shell" ;;
+    cinnamon) pkgs="xorg-server xorg-xinit cinnamon gnome-terminal nemo"; sentinel="cinnamon" ;;
+    *) echo "unknown desktop id '$id' — leaving KDE in place" >> "$L"; exit 0 ;;
+esac
+
+echo "--- syncing + installing: $pkgs ---" >> "$L"
+pacman -Sy --noconfirm >> "$L" 2>&1
+$PAC $pkgs >> "$L" 2>&1
+
+if pacman -Qq "$sentinel" >/dev/null 2>&1; then
+    echo "--- '$sentinel' installed; purging KDE ---" >> "$L"
+    rm_list=""
+    for p in $KDE; do pacman -Qq "$p" >/dev/null 2>&1 && rm_list="$rm_list $p"; done
+    [ -n "$rm_list" ] && pacman -Rns --noconfirm $rm_list >> "$L" 2>&1
+
+    case "$id" in
+        gnome|cinnamon)
+            # Vendetta dark/wallpaper GTK defaults come from /etc/dconf (cloned in).
+            echo "--- compiling dconf defaults ---" >> "$L"
+            dconf update >> "$L" 2>&1 || true ;;
+    esac
+    echo "--- lean $id install complete ---" >> "$L"
+else
+    echo "--- '$sentinel' did NOT install (offline?); KDE left intact ---" >> "$L"
+fi
+echo "DONE $(date -u)" >> "$L"
+exit 0

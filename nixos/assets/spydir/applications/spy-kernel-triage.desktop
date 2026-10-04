@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SPY-KERNEL-TRIAGE
+Comment=Kernel static-analysis triage (web app)
+Exec=spydir-webapp spy-kernel-triage 5050
+Terminal=false
+Icon=firefox-esr
+Categories=Security;Network;

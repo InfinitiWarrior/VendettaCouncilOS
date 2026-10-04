@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SPY-GEOINT
+Comment=GEOINT analyst workspace (web app)
+Exec=spydir-webapp spy-geoint 8060
+Terminal=false
+Icon=firefox-esr
+Categories=Security;Network;

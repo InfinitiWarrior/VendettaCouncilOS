@@ -14,11 +14,6 @@ strings:
     versionedName:       Vendetta Council OS 1.0
     shortVersionedName:  Vendetta 1.0
     bootloaderEntryName: Vendetta
-    productUrl:          https://vendettacouncil.example/
-    supportUrl:          https://vendettacouncil.example/support
-    knownIssuesUrl:      https://vendettacouncil.example/bugs
-    releaseNotesUrl:     https://vendettacouncil.example/
-    donateUrl:           https://vendettacouncil.example/
 
 sidebar: widget
 navigation: widget

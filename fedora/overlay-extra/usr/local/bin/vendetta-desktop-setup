@@ -1,0 +1,43 @@
+#!/bin/sh
+# Vendetta Council OS (Fedora) — install the chosen desktop and strip KDE for a
+# lean system. Run by Calamares contextualprocess IN THE TARGET, keyed on the
+# packagechooser `desktop` selection. KDE is purged only if the chosen DE
+# actually installed, so a failed (offline) install leaves a working KDE.
+# The three login managers ship preinstalled; this handles only the desktop.
+# Logs to /var/log/vendetta-install.log on the installed system.
+set -u
+id="${1:-}"
+L=/var/log/vendetta-install.log
+echo "=== vendetta-desktop-setup '$id' $(date -u) ===" >> "$L"
+
+DNF="dnf -y --setopt=install_weak_deps=False"
+case "$id" in
+    kde|"") echo "KDE (or no choice) — nothing to install; done" >> "$L"; echo "DONE $(date -u)" >> "$L"; exit 0 ;;
+    i3)       pkgs="xorg-x11-server-Xorg xorg-x11-xinit i3 i3status i3lock rofi feh dunst picom NetworkManager-applet"; sentinel="i3" ;;
+    hyprland) pkgs="hyprland waybar wofi mako swww grim slurp NetworkManager-applet"; sentinel="hyprland" ;;
+    sway)     pkgs="sway swaybg waybar wofi mako grim slurp foot NetworkManager-applet"; sentinel="sway" ;;
+    xfce)     pkgs="@xfce-desktop-environment xfce4-terminal"; sentinel="xfce4-session" ;;
+    gnome)    pkgs="gnome-shell gnome-terminal nautilus gnome-control-center gnome-tweaks"; sentinel="gnome-shell" ;;
+    cinnamon) pkgs="cinnamon nemo gnome-terminal"; sentinel="cinnamon" ;;
+    *) echo "unknown desktop id '$id' — leaving KDE in place" >> "$L"; exit 0 ;;
+esac
+
+echo "--- installing: $pkgs ---" >> "$L"
+$DNF install $pkgs >> "$L" 2>&1
+
+if rpm -q "$sentinel" >/dev/null 2>&1; then
+    echo "--- '$sentinel' installed; protecting essentials + purging KDE ---" >> "$L"
+    # keep these across the KDE removal + autoremove
+    dnf mark user sddm NetworkManager lightdm greetd >> "$L" 2>&1 || true
+    # removing plasma-workspace cascades to the KDE stack via reverse-deps
+    dnf -y remove plasma-workspace plasma-desktop >> "$L" 2>&1
+    dnf -y autoremove >> "$L" 2>&1
+    case "$id" in
+        gnome|cinnamon) dconf update >> "$L" 2>&1 || true ;;
+    esac
+    echo "--- lean $id install complete ---" >> "$L"
+else
+    echo "--- '$sentinel' did NOT install (offline?); KDE left intact ---" >> "$L"
+fi
+echo "DONE $(date -u)" >> "$L"
+exit 0

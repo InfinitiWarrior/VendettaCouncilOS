@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SPY-OSINT-SUITE
+Comment=OSINT investigation toolkit (web app)
+Exec=spydir-webapp spy-osint-suite 5001
+Terminal=false
+Icon=firefox-esr
+Categories=Security;Network;

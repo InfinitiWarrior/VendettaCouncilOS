@@ -47,3 +47,11 @@
 *~
 .DS_Store
 *.orig
+
+# per-distro build output + VM disks
+/arch/out/
+/arch/work/
+/fedora/out/
+/nixos/result
+*.qcow2
+__pycache__/

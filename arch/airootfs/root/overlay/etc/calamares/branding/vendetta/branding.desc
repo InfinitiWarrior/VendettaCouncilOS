@@ -1,0 +1,36 @@
+---
+componentName:   vendetta
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 800px,580px
+windowPlacement: center
+
+strings:
+    productName:         Vendetta Council OS
+    shortProductName:    Vendetta
+    version:             1.0
+    shortVersion:        1.0
+    versionedName:       Vendetta Council OS 1.0
+    shortVersionedName:  Vendetta 1.0
+    bootloaderEntryName:  Vendetta
+    productUrl:          https://github.com/spydirbyte
+    supportUrl:          https://github.com/spydirbyte
+
+sidebar: widget
+navigation: widget
+
+images:
+    productLogo:         "vendetta-logo.png"
+    productIcon:         "vendetta-logo.png"
+    productWelcome:      "welcome.png"
+
+slideshow:               "show.qml"
+
+style:
+   SidebarBackground:        "#04090A"
+   SidebarText:              "#CFE6E6"
+   SidebarTextCurrent:       "#04090A"
+   SidebarBackgroundCurrent: "#37E6D8"
+
+slideshowAPI: 2

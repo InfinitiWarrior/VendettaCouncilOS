@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Spydir OS (OSINT Course)
+Comment=Simulated hacker OS OSINT course (web app)
+Exec=firefox-esr --new-window https://spydirbyte.github.io/spydir-os/
+Terminal=false
+Icon=firefox-esr
+Categories=Education;Security;Network;

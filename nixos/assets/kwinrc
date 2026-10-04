@@ -1,0 +1,11 @@
+[org.kde.kdecoration2]
+library=org.kde.breeze
+theme=Breeze
+BorderSize=None
+ButtonsOnLeft=
+ButtonsOnRight=IAX
+
+[org.kde.kdecoration3]
+library=org.kde.breeze
+theme=Breeze
+BorderSize=None

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Vendetta Council OS — switch the active login manager, then reboot.
+#   sudo vendetta-dm <sddm|lightdm|greetd>
+set -eu
+dm="${1:-}"
+case "$dm" in
+    sddm)    bin=/usr/bin/sddm ;;
+    lightdm) bin=/usr/sbin/lightdm ;;
+    greetd)  bin=/usr/sbin/greetd ;;
+    *) echo "usage: vendetta-dm <sddm|lightdm|greetd>"; exit 1 ;;
+esac
+[ "$(id -u)" -eq 0 ] || { echo "run this as root (sudo vendetta-dm $dm)"; exit 1; }
+# never switch to a DM that isn't installed — that would leave no way to log in.
+[ -x "$bin" ] || { echo "'$dm' is not installed; leaving the current login manager."; exit 0; }
+for d in sddm lightdm greetd; do systemctl disable "$d" >/dev/null 2>&1 || true; done
+ln -sf "/lib/systemd/system/$dm.service" /etc/systemd/system/display-manager.service
+echo "$bin" > /etc/X11/default-display-manager
+systemctl enable "$dm" >/dev/null 2>&1 || true
+echo "Login manager set to '$dm'. Reboot to use it."

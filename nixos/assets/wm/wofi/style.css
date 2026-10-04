@@ -1,0 +1,6 @@
+window { background-color: #04090A; border: 2px solid #37E6D8; font-family: "Chakra Petch"; font-size: 14px; }
+#input { margin: 8px; padding: 8px; background-color: #0A1416; color: #CFE6E6; border: none; }
+#inner-box { margin: 8px; }
+#entry { padding: 8px; color: #CFE6E6; }
+#entry:selected { background-color: #37E6D8; color: #04090A; }
+#text:selected { color: #04090A; }

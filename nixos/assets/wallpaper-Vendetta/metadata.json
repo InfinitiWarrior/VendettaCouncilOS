@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Vendetta Council"
+            }
+        ],
+        "Id": "Vendetta",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Vendetta"
+    }
+}

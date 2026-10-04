@@ -1,0 +1,84 @@
+# Vendetta Council OS — i3 config (near-black #04090A / cyan #37E6D8).
+set $mod Mod4
+font pango:Chakra Petch 10
+
+# --- autostart ---
+exec_always --no-startup-id feh --bg-fill /usr/share/wallpapers/Vendetta/contents/images/1920x1080.png
+exec_always --no-startup-id picom -b
+exec --no-startup-id dunst
+exec --no-startup-id nm-applet
+
+# --- core keys ---
+bindsym $mod+Return exec kitty
+bindsym $mod+d exec rofi -show drun
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Log out of Vendetta?' -B 'Yes' 'i3-msg exit'"
+
+# focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+# move
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# layout
+bindsym $mod+f fullscreen toggle
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+v split v
+bindsym $mod+b split h
+
+# workspaces
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+
+# drag floating windows with the mod key
+floating_modifier $mod
+
+# --- look: gaps + cyan borders ---
+gaps inner 8
+gaps outer 4
+smart_gaps on
+default_border pixel 2
+default_floating_border pixel 2
+smart_borders on
+
+# class                 border  backgr. text    indicator child_border
+client.focused          #37E6D8 #04090A #CFE6E6 #37E6D8   #37E6D8
+client.focused_inactive #0A1416 #04090A #5A6E70 #0A1416   #0A1416
+client.unfocused        #0A1416 #04090A #5A6E70 #0A1416   #0A1416
+client.urgent           #D63C48 #04090A #CFE6E6 #D63C48   #D63C48
+
+# --- bar ---
+bar {
+    status_command i3status
+    position top
+    font pango:Chakra Petch 10
+    separator_symbol " · "
+    colors {
+        background #04090A
+        statusline #CFE6E6
+        separator  #1B2A2C
+        # class            border  backgr. text
+        focused_workspace  #37E6D8 #37E6D8 #04090A
+        active_workspace   #0A1416 #0A1416 #CFE6E6
+        inactive_workspace #04090A #04090A #5A6E70
+        urgent_workspace   #D63C48 #D63C48 #CFE6E6
+    }
+}
