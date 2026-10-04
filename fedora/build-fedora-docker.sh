@@ -7,7 +7,7 @@
 # Strategy: livecd-creator + Fedora's own KDE live kickstart (reused for its
 # livesys autologin), Anaconda swapped for Calamares, Vendetta overlay injected.
 # Calamares clones the live base rootfs (unpackfs /dev/mapper/live-base), so the
-# installed system IS the live system — all theme/tool/branding assets carry over.
+# installed system is the live system — all theme/tool/branding assets carry over.
 set -e
 cd "$(dirname "$0")"
 REPO="$(cd .. && pwd)"
@@ -41,7 +41,7 @@ exec docker run --rm --privileged \
 		# shared branding/theme/skel/toolkit from the Debian tree (reuses the
 		# Arch asset copier; it stages a few package-owned files under
 		# root/overlay — flatten them to final paths since Fedora injects the
-		# overlay AFTER packages are installed, where overwriting is free).
+		# overlay after packages are installed, where overwriting is free).
 		sh /repo/arch/copy-shared-assets.sh /tmp/overlay
 		if [ -d /tmp/overlay/root/overlay ]; then
 			cp -a /tmp/overlay/root/overlay/. /tmp/overlay/
@@ -51,7 +51,7 @@ exec docker run --rm --privileged \
 		# scripts, installer launcher, polkit rule).
 		cp -a /repo/fedora/overlay-extra/. /tmp/overlay/
 		# vendetta-hook.sh runs at build time (theming, no network); spydir-setup
-		# runs on FIRST BOOT (needs network) from /usr/local/lib/vendetta/.
+		# runs on first boot (needs network) from /usr/local/lib/vendetta/.
 		install -d /tmp/overlay/root /tmp/overlay/usr/local/lib/vendetta
 		install -m 0755 /repo/arch/vendetta-hook.sh /tmp/overlay/root/
 		install -m 0755 /repo/arch/spydir-setup.sh  /tmp/overlay/usr/local/lib/vendetta/spydir-setup.sh

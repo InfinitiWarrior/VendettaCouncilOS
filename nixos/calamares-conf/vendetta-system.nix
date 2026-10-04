@@ -1,6 +1,6 @@
 # Vendetta Council OS — installed-system module.
 #
-# NixOS's Calamares GENERATES a fresh configuration.nix (it does not clone the
+# NixOS's Calamares generates a fresh configuration.nix (it does not clone the
 # live system like the Debian/Arch/Fedora builds), so none of the live ISO's
 # rice reaches the installed disk on its own. The installer (nixos-main.py)
 # copies this file to the target's /etc/nixos/vendetta.nix, copies the assets to
@@ -160,24 +160,21 @@ in
     esac
   '';
 
-  # --- SDDM greeter theme. Two things were needed (both found from the greeter
-  #     journal): (1) NixOS's default SDDM is Qt5.15, but our theme declares
-  #     QtVersion=6 (Debian's SDDM is Qt6), so Qt5 SDDM REJECTS it and loads the
-  #     built-in qrc:/theme default — force the Qt6 SDDM (kdePackages.sddm).
-  #     (2) `.theme` does NOT write [Theme] Current on this release, so set it
-  #     directly. The theme ships in vendetta-sddm (systemPackages); NixOS points
-  #     ThemeDir at /run/current-system/sw/share/sddm/themes. ---
   # Sway/Hyprland are Wayland-only, so the generated config never turns X on,
   # but the graphical login managers (LightDM always, SDDM's greeter) need it.
   services.xserver.enable = lib.mkIf (swayEnabled || hyprlandEnabled) true;
-  # LightDM starts a Wayland session a moment BEFORE it tears down the greeter's
+  # LightDM starts a Wayland session a moment before it tears down the greeter's
   # X server; Hyprland launched in that window comes up with no input devices at
-  # all (no keyboard, no mouse). Hold the session back until X has let go.
-  # NOTE: fixed delay, not a real wait-for-seat; X is gone ~0.4s after login.
+  # all. Hold the session back until X has let go (a fixed delay; X is gone
+  # about 0.4s after login).
   services.xserver.displayManager.sessionCommands = lib.mkIf lightdmEnabled ''
     [ "$XDG_SESSION_TYPE" = wayland ] && sleep 3
   '';
 
+  # --- SDDM greeter theme. The theme declares QtVersion=6, which NixOS's default
+  #     Qt5 SDDM rejects in favour of its built-in one, so use the Qt6 SDDM; and
+  #     `.theme` does not write [Theme] Current on this release, so set it
+  #     directly. ---
   services.displayManager.sddm.package = lib.mkForce pkgs.kdePackages.sddm;
   services.displayManager.sddm.settings.Theme.Current = "vendetta";
 
@@ -311,7 +308,7 @@ in
         icon-theme = "Papirus-Dark";
         font-name = "Chakra Petch 10";
       };
-      # The Cinnamon SHELL theme (panel/menu/applets) — unset = default light.
+      # The Cinnamon shell theme (panel/menu/applets) — unset = default light.
       # Mint-Y-Dark-Aqua is dark with a teal accent (ships with cinnamon).
       "org/cinnamon/theme" = { name = "Mint-Y-Dark-Aqua"; };
       # Window borders: Muffin reads org.cinnamon.desktop.wm.preferences (NixOS
@@ -338,7 +335,7 @@ in
       };
     };
 
-    # XFCE rice via xfconf (xfconf-query at activation — NOT read-only xml files,
+    # XFCE rice via xfconf (xfconf-query at activation — not read-only xml files,
     # which xfconfd can't manage). Dark theme + fonts + wallpaper + xfwm4 deco.
     xfconf.settings = lib.mkIf xfceEnabled {
       xsettings = {

@@ -75,7 +75,7 @@ printf '[General]\ntheme=Vendetta\n' > /etc/skel/.config/Kvantum/kvantum.kvconfi
 
 # Window decoration: flat Breeze, no border, no gradient — recoloured near-black
 # by the Vendetta scheme. (The hand-rolled Aurorae "Vendetta" theme under
-# usr/share/aurorae/ is NOT conformant enough for KWin 6 to load — it silently
+# usr/share/aurorae/ is not conformant enough for KWin 6 to load — it silently
 # falls back to Breeze anyway. TODO: ship the working fallback; finish the
 # Aurorae SVG on a real KDE box and flip `library`/`theme` back when it renders.)
 # Plasma 6.3 (trixie) reads [org.kde.kdecoration3]; older reads ...2. Write both.

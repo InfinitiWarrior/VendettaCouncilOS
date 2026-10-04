@@ -1,6 +1,6 @@
 #!/bin/sh
 # Vendetta Council OS (Fedora) — install the chosen desktop and strip KDE for a
-# lean system. Run by Calamares contextualprocess IN THE TARGET, keyed on the
+# lean system. Run by Calamares contextualprocess in the target, keyed on the
 # packagechooser `desktop` selection. KDE is purged only if the chosen DE
 # actually installed, so a failed (offline) install leaves a working KDE.
 # The three login managers ship preinstalled; this handles only the desktop.

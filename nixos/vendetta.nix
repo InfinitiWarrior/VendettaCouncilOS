@@ -61,7 +61,7 @@ in
     cp ${./assets/grub-bg.png} $out/background.png
   '';
 
-  # Vendetta plymouth splash on the LIVE ISO too (was default KDE).
+  # Vendetta plymouth splash on the live ISO too.
   boot.plymouth = {
     enable = true;
     theme = lib.mkForce "vendetta";

@@ -622,7 +622,7 @@ def run():
         elif _vlogin == "greetd":
             cfg += "  services.greetd.enable = true;\n"
             # tuigreet defaults to /usr/share/{x,wayland}-sessions, which don't
-            # exist on NixOS, so it finds NO sessions and the login just loops.
+            # exist on NixOS, so it finds no sessions and the login just loops.
             # Point it at the NixOS session dirs (xsessions for X11 — tuigreet
             # 0.9.x wraps those with startx — and wayland-sessions).
             _dt = "${config.services.displayManager.sessionData.desktops}"

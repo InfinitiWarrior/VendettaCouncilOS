@@ -2,7 +2,7 @@
 # Builds on Fedora's own KDE live spin (reusing its livesys autologin/live-user
 # machinery), swaps Anaconda for Calamares, and injects the Vendetta overlay.
 # The installer clones the live base rootfs (Calamares unpackfs /dev/mapper/
-# live-base), so the installed system IS the live system.
+# live-base), so the installed system is the live system.
 
 # Built from inside a clone of fedora-kickstarts (f43), so this relative include
 # and its own %include chain (fedora-live-base.ks, fedora-kde-common.ks) resolve.

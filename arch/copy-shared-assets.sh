@@ -67,7 +67,7 @@ install -Dm644 "$SRC/boot/grub/vendetta.png" "$DEST/usr/share/vendetta/grub-bg.p
 
 # These paths are owned by the `filesystem`/`calamares` packages, so they can't
 # sit in the airootfs (pacstrap would abort on "exists in filesystem"). Stage
-# them under /root/overlay; customize_airootfs.sh copies them onto / AFTER
+# them under /root/overlay; customize_airootfs.sh copies them onto / after
 # pacstrap, where overwriting package files is free.
 OV="$DEST/root/overlay"
 install -Dm644 "$SRC/etc/issue" "$OV/etc/issue"

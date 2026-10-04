@@ -7,7 +7,7 @@
 # Strategy: start from archiso's stock `releng` profile and overlay our bits
 # (airootfs, packages, pacman.conf, Calamares config, branding, live setup).
 # The installer clones the live squashfs (Calamares unpackfs), so the installed
-# system IS the live system — every theme/tool/branding asset carries over.
+# system is the live system — every theme/tool/branding asset carries over.
 set -e
 cd "$(dirname "$0")"
 REPO="$(cd .. && pwd)"

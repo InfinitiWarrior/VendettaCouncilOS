@@ -2,7 +2,7 @@
 # Vendetta Council OS — install the chosen desktop and strip KDE for a lean
 # system. Run by Calamares contextualprocess in the TARGET, keyed on the
 # packagechooser `desktop` selection (packagechooser legacy method only records
-# the choice; it does NOT install — so we do it here explicitly).
+# the choice; it does not install — so we do it here explicitly).
 #
 # Logs everything to /var/log/vendetta-install.log on the installed system.
 # KDE is only purged if the chosen desktop actually installed, so a failed
@@ -17,7 +17,7 @@ KDE="kde-plasma-desktop plasma-desktop plasma-workspace plasma-workspace-wayland
      okular kde-spectacle plasma-desktop-data"
 WALL=/usr/share/wallpapers/Vendetta/contents/images/1920x1080.png
 
-# Write the Vendetta greeter theming AFTER the DM packages are installed (these
+# Write the Vendetta greeter theming after the DM packages are installed (these
 # paths are package conffiles — shipping them in the image causes dpkg conffile
 # conflicts that break the whole apt run, so we write them here instead).
 vendetta_write_dm_configs() {
@@ -85,7 +85,7 @@ case "$id" in
         pkgs="sway swaybg waybar wofi mako-notifier network-manager-gnome grim slurp polkitd"
         sentinel="sway" ;;
     xfce)
-        # xserver-xorg is NOT pulled by the xfce4 metapackage on trixie — without
+        # xserver-xorg is not pulled by the xfce4 metapackage on trixie — without
         # it the X session can't start (black screen + underscore after login).
         pkgs="xserver-xorg xinit xfce4 xfce4-terminal xfce4-goodies network-manager-gnome"
         sentinel="xfce4-session" ;;

@@ -34,7 +34,7 @@ hl.config({
 })
 
 -- autostart: bar, notifications, network tray, and the swww wallpaper.
--- swww needs its daemon up FIRST, then `swww img` — hence the short sleep.
+-- swww needs its daemon up first, then `swww img` — hence the short sleep.
 hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
     hl.exec_cmd("mako")

@@ -12,7 +12,7 @@ cp -a /root/overlay/. /
 # OS identity: everything reads /etc/os-release -> point it at ours.
 ln -sf /usr/lib/os-release /etc/os-release
 
-# Apply KDE/Plasma branding to /etc/xdg + /etc/skel (BEFORE creating the live
+# Apply KDE/Plasma branding to /etc/xdg + /etc/skel (before creating the live
 # user, so its home inherits the themed skel).
 sh /root/vendetta-hook.sh || echo "W: vendetta-hook failed"
 
