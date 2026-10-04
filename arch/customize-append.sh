@@ -9,6 +9,11 @@ set -e
 # os-release, /etc/calamares/*, the greetd/slick-greeter configs, issue + motd.
 cp -a /root/overlay/. /
 
+# mkarchiso copies airootfs without preserving file modes, so our scripts
+# arrive non-executable; restore the bit here.
+chmod 755 /usr/bin/vendetta-tools /usr/lib/vendetta-* /usr/local/sbin/vendetta-* \
+	/usr/local/bin/vendetta-install /usr/local/bin/spydir-webapp
+
 # OS identity: everything reads /etc/os-release -> point it at ours.
 ln -sf /usr/lib/os-release /etc/os-release
 
