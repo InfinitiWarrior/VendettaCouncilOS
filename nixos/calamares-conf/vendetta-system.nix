@@ -167,6 +167,10 @@ in
   #     (2) `.theme` does NOT write [Theme] Current on this release, so set it
   #     directly. The theme ships in vendetta-sddm (systemPackages); NixOS points
   #     ThemeDir at /run/current-system/sw/share/sddm/themes. ---
+  # Sway/Hyprland are Wayland-only, so the generated config never turns X on,
+  # but the graphical login managers (LightDM always, SDDM's greeter) need it.
+  services.xserver.enable = lib.mkIf (swayEnabled || hyprlandEnabled) true;
+
   services.displayManager.sddm.package = lib.mkForce pkgs.kdePackages.sddm;
   services.displayManager.sddm.settings.Theme.Current = "vendetta";
 
