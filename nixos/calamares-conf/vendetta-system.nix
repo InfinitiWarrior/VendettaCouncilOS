@@ -258,6 +258,7 @@ in
       })
       (lib.mkIf swayEnabled {
         ".config/sway/config".text = wmConf "${wm}/sway/config";
+        ".config/waybar/config-sway".source = "${wm}/waybar/config-sway";
         ".config/waybar/config".source = "${wm}/waybar/config";
         ".config/waybar/style.css".source = "${wm}/waybar/style.css";
         ".config/wofi/config".source = "${wm}/wofi/config";

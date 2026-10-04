@@ -5,7 +5,7 @@
 }
 window#waybar { background: #04090A; color: #CFE6E6; border-bottom: 2px solid #0A1416; }
 #workspaces button { color: #5A6E70; padding: 0 10px; background: transparent; border: none; border-radius: 0; }
-#workspaces button.active { color: #04090A; background: #37E6D8; }
+#workspaces button.active, #workspaces button.focused { color: #04090A; background: #37E6D8; }
 #workspaces button:hover { color: #37E6D8; background: #0A1416; }
 #clock { color: #37E6D8; font-weight: bold; padding: 0 12px; }
 #cpu, #memory, #network, #pulseaudio, #tray { padding: 0 10px; color: #CFE6E6; }

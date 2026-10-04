@@ -5,10 +5,10 @@ font pango:Chakra Petch 10
 # wallpaper (sway drives swaybg natively)
 output * bg /usr/share/wallpapers/Vendetta/contents/images/1920x1080.png fill
 
-# autostart
-exec waybar
-exec mako
-exec nm-applet --indicator
+# autostart. The session environment has to reach systemd/dbus BEFORE anything
+# graphical starts: otherwise the desktop portal comes up with no display, and
+# waybar waits 25s on it and then quits (no bar at all).
+exec sh -c 'dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP DISPLAY; waybar -c ~/.config/waybar/config-sway & mako & exec nm-applet --indicator'
 
 # core keys
 bindsym $mod+Return exec kitty
