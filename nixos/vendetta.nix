@@ -52,8 +52,14 @@ in
   # 16:9 image gets squished — use a letterboxed 800x600 (4:3) splash instead.
   isoImage.splashImage    = lib.mkForce ./assets/boot-splash-bios.png;
   isoImage.efiSplashImage = lib.mkForce ./assets/grub-bg.png;
-  # The default NixOS grub theme takes precedence over efiSplashImage on UEFI.
-  isoImage.grubTheme      = null;
+  # UEFI/GRUB: a theme always wins over efiSplashImage (and with no theme the
+  # stock menu colours are unreadable on a dark splash), so ship the same theme
+  # the Debian live ISO uses, over the Vendetta background.
+  isoImage.grubTheme = pkgs.runCommand "vendetta-grub-theme" { } ''
+    mkdir -p $out
+    cp ${./assets/grub-theme/theme.txt} $out/theme.txt
+    cp ${./assets/grub-bg.png} $out/background.png
+  '';
 
   # Vendetta plymouth splash on the LIVE ISO too (was default KDE).
   boot.plymouth = {

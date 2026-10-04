@@ -26,8 +26,11 @@ PY=$(readlink -f "$(command -v python3)" 2>/dev/null); [ -x "$PY" ] || PY=/usr/b
 for name in $TOOLS; do
 	dir="$BASE/$name"
 	git clone --depth 1 "$GH/$name.git" "$dir" 2>&1 || { echo "W: clone failed, skipping $name"; continue; }
+	# Pillow comes from pacman (see above); a pinned Pillow here would be built
+	# from source and take the tool's other deps down with it.
 	[ -f "$dir/requirements.txt" ] && \
-		"$VENV/bin/pip" install --no-input --quiet -r "$dir/requirements.txt" \
+		grep -vi '^pillow' "$dir/requirements.txt" | \
+		"$VENV/bin/pip" install --no-input --quiet -r /dev/stdin \
 			|| echo "W: deps failed for $name (installing anyway)"
 	entry=""
 	for e in cli.py app.py run.py; do [ -f "$dir/$e" ] && { entry=$e; break; }; done
