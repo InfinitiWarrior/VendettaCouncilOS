@@ -1,22 +1,8 @@
 #!/bin/sh
-# Vendetta Council OS (Arch) — install the chosen desktop and strip KDE for a
-# lean system. Run by Calamares contextualprocess in the target, keyed on the
-# packagechooser `desktop` selection. The legacy packagechooser method only
-# records the choice; the install + KDE removal happen here.
-#
-# Unlike the Debian build, the three login managers are PREINSTALLED in the
-# image (sddm/lightdm+slick-greeter/greetd+tuigreet), so this script only
-# handles the desktop. KDE is purged only if the chosen DE actually installed,
-# so a failed (offline) install leaves a working KDE rather than no desktop.
-#
-# Logs to /var/log/vendetta-install.log on the installed system.
 set -u
 id="${1:-}"
 L=/var/log/vendetta-install.log
 
-# The curated KDE set we ship — mirror of packages.x86_64.extra. Only the ones
-# actually installed are removed (pacman errors on absent targets), and -Rns
-# keeps any dep still required by a package we keep (sddm, networkmanager...).
 KDE="plasma-desktop plasma-workspace plasma-nm plasma-pa powerdevil systemsettings
      kscreen plasma-systemmonitor bluedevil kde-gtk-config kdeplasma-addons
      kinfocenter kwin konsole dolphin ark kate gwenview okular spectacle discover
@@ -24,8 +10,6 @@ KDE="plasma-desktop plasma-workspace plasma-nm plasma-pa powerdevil systemsettin
 
 echo "=== vendetta-desktop-setup '$id' $(date -u) ===" >> "$L"
 
-# The live image keeps pacman's keyring on a tmpfs, so the installed system has
-# none yet and every package would fail signature checks.
 if [ ! -d /etc/pacman.d/gnupg ]; then
     pacman-key --init >> "$L" 2>&1
     pacman-key --populate archlinux >> "$L" 2>&1
@@ -45,8 +29,6 @@ esac
 
 echo "--- syncing + installing: $pkgs ---" >> "$L"
 pacman -Sy --noconfirm >> "$L" 2>&1
-# Our themed defaults in /etc/xdg/xfce4 are files the Xfce packages also own:
-# let pacman overwrite them, then put ours back.
 cp -a /etc/xdg/xfce4 /tmp/vendetta-xfce4
 $PAC --overwrite 'etc/xdg/xfce4/*' $pkgs >> "$L" 2>&1
 cp -a /tmp/vendetta-xfce4/. /etc/xdg/xfce4/
@@ -59,14 +41,11 @@ if pacman -Qq "$sentinel" >/dev/null 2>&1; then
 
     case "$id" in
         xfce)
-            # the xfce-wayland session black-screens in VMs; keep the X11 one
             rm -f /usr/share/wayland-sessions/xfce-wayland.desktop ;;
         hyprland)
-            # Arch renamed swww to awww; the shared Hyprland config still calls swww.
             ln -sf /usr/bin/awww /usr/local/bin/swww
             ln -sf /usr/bin/awww-daemon /usr/local/bin/swww-daemon ;;
         gnome|cinnamon)
-            # Vendetta dark/wallpaper GTK defaults come from /etc/dconf (cloned in).
             echo "--- compiling dconf defaults ---" >> "$L"
             dconf update >> "$L" 2>&1 || true ;;
     esac

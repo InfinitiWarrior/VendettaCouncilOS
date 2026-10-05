@@ -1,13 +1,4 @@
 #!/bin/sh
-# Launch a spydir Flask dashboard and open it in the browser.
-#   spydir-webapp <tool-name> <port>
-#
-# The tools live read-only under /opt/spydir (root-owned), but each dashboard
-# writes its SQLite DB + uploads into its OWN dir (BASE_DIR/data/...). So on
-# first launch we copy the app into the user's home once and run it from there,
-# where it can write. The shared venv under /opt stays read-only.
-#
-# Safe to run repeatedly — a second click just reopens the running server.
 set -eu
 name=$1; port=$2
 src=/opt/spydir/$name
@@ -16,8 +7,6 @@ data="${XDG_DATA_HOME:-$HOME/.local/share}/spydir"
 app="$data/$name"
 url="http://127.0.0.1:$port"
 
-# On distros where the toolkit clones on first boot (Fedora/NixOS) it may not be
-# ready the instant you click. Say so instead of failing silently.
 if [ ! -e "$src/app.py" ] || [ ! -x "$py" ]; then
 	msg="The spydir toolkit is still installing (first boot). Give it a minute, then try again."
 	notify-send "Vendetta Council OS" "$msg" 2>/dev/null \
@@ -27,13 +16,11 @@ if [ ! -e "$src/app.py" ] || [ ! -x "$py" ]; then
 	exit 0
 fi
 
-# per-user writable copy (code only — deps come from the shared venv)
 if [ ! -e "$app/app.py" ]; then
 	mkdir -p "$data"
 	cp -a "$src" "$app"
 fi
 
-# port already open? (no curl in the image — probe with python's socket)
 up() { "$py" - "$port" <<'PY'
 import socket,sys
 try: socket.create_connection(("127.0.0.1",int(sys.argv[1])),0.4).close()
@@ -42,14 +29,11 @@ PY
 }
 
 if ! up; then
-	# DEBUG=0 keeps Flask's reloader from double-forking under a detached start.
 	( cd "$app" && HOST=127.0.0.1 PORT="$port" DEBUG=0 "$py" app.py \
 		>"$app/server.log" 2>&1 & )
 	i=0; while [ $i -lt 40 ]; do up && break; sleep 0.5; i=$((i+1)); done
 fi
 
-# open in the default browser — portable across distros (firefox-esr only
-# exists on Debian; NixOS/Arch/Fedora ship `firefox`, so fall back sensibly).
 for b in firefox firefox-esr chromium brave; do
 	if command -v "$b" >/dev/null 2>&1; then exec "$b" --new-window "$url"; fi
 done

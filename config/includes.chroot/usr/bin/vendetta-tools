@@ -1,5 +1,4 @@
 #!/bin/sh
-# What Vendetta Council OS ships on top of the base KDE Plasma system.
 echo "Vendetta Council OS extras (apt remove vendetta-desktop to drop them):"
 apt-cache depends --no-recommends --no-suggests vendetta-desktop 2>/dev/null \
 	| awk '/Depends:/ {print "  " $2}'

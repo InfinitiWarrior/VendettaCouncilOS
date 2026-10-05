@@ -1,12 +1,8 @@
 #!/bin/sh
-# Copy the distro-agnostic Vendetta assets from the Debian tree
-# (../config/includes.chroot) into the Arch airootfs, so both ISOs ship byte-for
-# -byte identical branding/theme/skel. Usage: copy-shared-assets.sh <airootfs-dir>
 set -eu
 DEST="$1"
 SRC="$(cd "$(dirname "$0")/../config/includes.chroot" && pwd)"
 
-# Files + directories reused verbatim (same relative path in the target).
 PATHS="
 usr/share/aurorae/themes/Vendetta
 usr/share/Kvantum/Vendetta
@@ -62,17 +58,11 @@ for p in $PATHS; do
 	cp -a --parents "$p" "$DEST/"
 done
 
-# GRUB background for the installed system (Calamares grubcfg points here).
 install -Dm644 "$SRC/boot/grub/vendetta.png" "$DEST/usr/share/vendetta/grub-bg.png"
 
-# These paths are owned by the `filesystem`/`calamares` packages, so they can't
-# sit in the airootfs (pacstrap would abort on "exists in filesystem"). Stage
-# them under /root/overlay; customize_airootfs.sh copies them onto / after
-# pacstrap, where overwriting package files is free.
 OV="$DEST/root/overlay"
 install -Dm644 "$SRC/etc/issue" "$OV/etc/issue"
 install -Dm644 "$SRC/etc/motd"  "$OV/etc/motd"
-# Calamares branding logos (reuse the Debian ones under our vendetta branding).
 BR="$OV/etc/calamares/branding/vendetta"
 install -Dm644 "$SRC/etc/calamares/branding/debian/vendetta-logo.png" "$BR/vendetta-logo.png"
 install -Dm644 "$SRC/etc/calamares/branding/debian/welcome.png"       "$BR/welcome.png"

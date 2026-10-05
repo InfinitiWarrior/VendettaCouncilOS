@@ -1,5 +1,4 @@
 #!/bin/sh
-# Build the vendetta-desktop metapackage into config/packages.chroot/.
 set -e
 cd "$(dirname "$0")"
 

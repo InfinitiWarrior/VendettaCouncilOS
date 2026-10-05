@@ -1,5 +1,4 @@
 #!/bin/sh
-# What Vendetta Council OS ships on top of base Arch + KDE Plasma.
 echo "Vendetta Council OS — preinstalled extras:"
 echo "  spydirbyte toolkit under /opt/spydir (web apps in the menu, CLI in \$PATH)"
 echo "  login managers: sddm (default), lightdm, greetd  —  switch: sudo vendetta-dm <name>"

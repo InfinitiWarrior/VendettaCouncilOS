@@ -1,7 +1,3 @@
-// Vendetta Council OS — apt tuning. Safe knobs only.
-// For pacman-style parallel/segmented downloads run `nala` (shipped by default).
-// NOTE: native parallel apt arrives with apt 2.7 (Debian trixie); until the
-//       base moves up, nala is the fast path — nothing to build here.
 Acquire::Languages "none";
 Acquire::http::Pipeline-Depth "10";
 Acquire::Retries "3";

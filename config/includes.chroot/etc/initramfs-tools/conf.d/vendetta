@@ -1,2 +1,1 @@
-# Vendetta Council OS — zstd initramfs: smaller image, faster decompress at boot.
 COMPRESS=zstd

@@ -1,4 +1,3 @@
-# Vendetta Council OS — desktop base (KDE Plasma 6, Wayland session).
 kde-plasma-desktop
 plasma-workspace
 kwin-wayland
@@ -21,7 +20,6 @@ network-manager
 pipewire-audio
 wireplumber
 
-# theming bridges + tools the branding hook needs
 libkf6config-bin
 kde-config-gtk-style
 breeze-gtk-theme

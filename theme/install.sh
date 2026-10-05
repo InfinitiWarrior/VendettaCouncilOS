@@ -1,7 +1,4 @@
 #!/bin/sh
-# Install the Vendetta Plasma theme for the current user and apply it.
-# The ISO ships all of this system-wide already; this is for trying it on
-# another distro or iterating during development.
 set -e
 cd "$(dirname "$0")/.."
 SRC=config/includes.chroot/usr/share
@@ -23,7 +20,6 @@ cp    "$SRC/fonts/truetype/chakra-petch/"*.ttf    "$HOME/.fonts/"
 fc-cache -f "$HOME/.fonts" >/dev/null
 
 if command -v plasma-apply-lookandfeel >/dev/null; then
-	# one shot: LnF carries colour scheme, fonts, deco, Kvantum style, panel layout
 	plasma-apply-lookandfeel -a org.vendetta.desktop
 	plasma-apply-colorscheme Vendetta
 	plasma-apply-desktoptheme Vendetta

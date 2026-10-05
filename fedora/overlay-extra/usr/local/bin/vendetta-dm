@@ -1,8 +1,4 @@
 #!/bin/sh
-# Vendetta Council OS (Fedora) — switch the active login manager, then reboot.
-#   sudo vendetta-dm <sddm|lightdm|greetd>
-# All three ship preinstalled; this flips which systemd unit owns
-# display-manager.service. No-ops safely if the chosen one isn't installed.
 set -eu
 dm="${1:-}"
 case "$dm" in

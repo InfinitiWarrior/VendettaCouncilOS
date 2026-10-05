@@ -5,7 +5,6 @@ title-text: ""
 message-font: "Unifont Regular 16"
 terminal-font: "Unifont Regular 16"
 
-#help bar at the bottom
 + label {
         top = 100%-50
         left = 0
@@ -17,7 +16,6 @@ terminal-font: "Unifont Regular 16"
 	font = "Unifont Regular 16"
 }
 
-#boot menu
 + boot_menu {
         left = 10%
         width = 80%
@@ -35,7 +33,6 @@ terminal-font: "Unifont Regular 16"
 	item_icon_space = 0
 }
 
-#progress bar
 + progress_bar {
         id = "__timeout__"
         left = 15%

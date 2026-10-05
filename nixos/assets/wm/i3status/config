@@ -1,4 +1,3 @@
-# Vendetta Council OS — i3status
 general {
         colors = true
         color_good = "#37E6D8"

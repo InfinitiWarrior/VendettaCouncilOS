@@ -1,15 +1,9 @@
-# Vendetta Council OS (Arch) — appended to releng's packages.x86_64.
-# KDE Plasma is the default/offline desktop (other DEs install on demand at
-# install time). All three login managers ship preinstalled.
-
-# --- Xorg / Wayland base + VM guest ---
 xorg-server
 xorg-xinit
 mesa
 qemu-guest-agent
 spice-vdagent
 
-# --- KDE Plasma 6 (curated, mirror of the Debian set) ---
 plasma-desktop
 plasma-workspace
 plasma-nm
@@ -23,7 +17,6 @@ kdeplasma-addons
 kinfocenter
 breeze-gtk
 plasma-workspace-wallpapers
-# KDE apps
 konsole
 dolphin
 ark
@@ -33,7 +26,6 @@ okular
 spectacle
 discover
 
-# --- browser / network / audio ---
 firefox
 networkmanager
 network-manager-applet
@@ -42,7 +34,6 @@ pipewire-pulse
 pipewire-alsa
 wireplumber
 
-# --- theming ---
 qt6ct
 kvantum
 papirus-icon-theme
@@ -50,7 +41,6 @@ ttf-jetbrains-mono
 noto-fonts
 noto-fonts-emoji
 
-# --- boot / splash ---
 plymouth
 grub
 efibootmgr
@@ -58,17 +48,14 @@ os-prober
 dosfstools
 mtools
 
-# --- login managers (all three; sddm is the default) ---
 sddm
 lightdm
 lightdm-slick-greeter
 greetd
 greetd-tuigreet
 
-# --- installer ---
 calamares
 
-# --- spydir toolkit build/runtime ---
 git
 python
 python-pip
@@ -76,7 +63,6 @@ python-pillow
 nodejs
 npm
 
-# --- CLI tools (parity with the Debian live set) ---
 fastfetch
 btop
 ripgrep

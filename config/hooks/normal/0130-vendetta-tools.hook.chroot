@@ -1,25 +1,10 @@
 #!/bin/sh
-# Vendetta Council OS — preinstall the spydirbyte security toolkit.
-# These tools aren't in Debian, so we clone them into /opt/spydir, drop all
-# their Python deps into one shared venv, and expose each as /usr/local/bin/<name>.
-#
-# App-menu entries are STATIC (config/includes.chroot/usr/share/applications):
-#   - the 6 tools with a web UI (app.py) get a "web app" launcher via
-#     /usr/local/bin/spydir-webapp, which starts the local Flask server and
-#     opens the browser.
-#   - the command-line-only tools (spy-crack/trail/vector/wraith/xray/webster)
-#     have no web UI, so they get no menu entry — run them from Konsole.
-#
-# A failed clone/build warns and skips — one broken repo must not kill the ISO.
 set -e
 
 BASE=/opt/spydir
 VENV=$BASE/venv
 GH=https://github.com/spydirbyte
 
-# Python tools: cloned, deps into the shared venv, entry auto-detected
-# (cli.py > app.py > run.py). Several app.py ones serve a local web dashboard
-# and print their URL on launch.
 TOOLS="spy-crack spy-geoint spy-kernel-triage spy-osint-suite spy-privacy-pulse
 spy-recon-mapper spy-threat-hunt spy-trail spy-vector spy-wraith spy-xray"
 
@@ -49,7 +34,6 @@ EOF
 	chmod +x "/usr/local/bin/$name"
 done
 
-# spy-webster — TypeScript. Build to dist/ and run with node (CLI only, no menu).
 if git clone --depth 1 "$GH/spy-webster.git" "$BASE/spy-webster" 2>/dev/null; then
 	( cd "$BASE/spy-webster" && npm ci --silent && npm run build --if-present ) \
 		&& cat > /usr/local/bin/spy-webster <<EOF

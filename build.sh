@@ -1,6 +1,4 @@
 #!/bin/sh
-# Build the Vendetta Council OS ISO. Needs root (live-build mounts things).
-#   sudo ./build.sh
 set -e
 cd "$(dirname "$0")"
 

@@ -1,15 +1,3 @@
-# Vendetta Council OS — installed-system module.
-#
-# NixOS's Calamares generates a fresh configuration.nix (it does not clone the
-# live system like the Debian/Arch/Fedora builds), so none of the live ISO's
-# rice reaches the installed disk on its own. The installer (nixos-main.py)
-# copies this file to the target's /etc/nixos/vendetta.nix, copies the assets to
-# /etc/nixos/vendetta-assets/, and adds ./vendetta.nix to configuration.nix's
-# imports — so the installed system gets the Vendetta tools, fonts, branding,
-# Plasma rice, SDDM/fastfetch/GRUB theming, the user avatar, the WM rice and the
-# spydir toolkit.
-#
-# @@username@@ / @@nixosversion@@ are substituted by nixos-main.py at install.
 { config, pkgs, lib, ... }:
 
 let
@@ -23,7 +11,6 @@ let
   xfceEnabled     = config.services.xserver.desktopManager.xfce.enable or false;
   lightdmEnabled  = config.services.xserver.displayManager.lightdm.enable or false;
 
-  # Pinned to the exact revisions the live ISO's flake.lock was tested with.
   hmSrc = builtins.fetchTarball {
     url = "https://github.com/nix-community/home-manager/archive/44831a7eaba4360fb81f2acc5ea6de5fde90aaa3.tar.gz";
   };
@@ -80,8 +67,6 @@ let
     '';
   };
 
-  # spydir web-app launchers: in the menu + PATH immediately (functional once the
-  # first-boot service below has cloned the tools into /opt/spydir).
   vendetta-spydir = pkgs.stdenvNoCC.mkDerivation {
     name = "vendetta-spydir-launchers";
     src = ./vendetta-assets/spydir;
@@ -95,8 +80,6 @@ let
   };
 
   wm = ./vendetta-assets/wm;
-  # The WM configs are shared with the FHS editions; point their wallpaper at
-  # the store path (there is no /usr/share on NixOS).
   wmConf = f: builtins.replaceStrings
     [ "/usr/share/wallpapers/Vendetta/contents/images/1920x1080.png" ] [ wallpaperImg ]
     (builtins.readFile f);
@@ -114,14 +97,12 @@ in
 {
   imports = [ "${hmSrc}/nixos" ];
 
-  # --- identity / branding ---
   system.nixos.distroName = lib.mkForce "Vendetta Council OS";
   system.nixos.distroId   = lib.mkForce "vendetta";
 
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # --- console branding (motd) ---
   users.motd = ''
       ██╗   ██╗ ██████╗
       ██║   ██║██╔════╝    Vendetta Council OS
@@ -131,28 +112,21 @@ in
         ╚═══╝   ╚═════╝    extras: `vendetta-tools`
   '';
 
-  # --- CLI tools (the Vendetta "nice tools" set) + branding assets ---
   environment.systemPackages = with pkgs; [
     git python3 nodejs xdg-utils
     btop ripgrep fd bat fzf kitty micro zsh tmux fastfetch neofetch nmap
     chakra-petch vendetta-colors vendetta-wallpaper vendetta-sddm
     vendetta-fastfetch vendetta-spydir
     papirus-icon-theme gnome-themes-extra
-    xorg.xinit  # startx — lets greetd/tuigreet launch X11 sessions
+    xorg.xinit
   ]
-  # GNOME ships `kgx` (Console), not gnome-terminal — install gnome-terminal so
-  # the Vendetta terminal profile (dconf) actually has an app to style.
   ++ lib.optional (gnomeEnabled || cinnamonEnabled) pkgs.gnome-terminal
-  # The helpers the WM configs exec (bar, launcher, notifications, wallpaper).
   ++ lib.optionals i3Enabled (with pkgs; [ feh picom dunst rofi i3status networkmanagerapplet ])
   ++ lib.optionals (swayEnabled || hyprlandEnabled) (with pkgs; [ waybar mako wofi networkmanagerapplet ])
   ++ lib.optionals hyprlandEnabled (with pkgs; [ swww adwaita-icon-theme ]);
   fonts.packages = [ chakra-petch pkgs.jetbrains-mono ];
-  # GNOME Console can't take a colour scheme; drop it so the themed
-  # gnome-terminal is the terminal GNOME offers.
   environment.gnome.excludePackages = lib.mkIf gnomeEnabled [ pkgs.gnome-console ];
 
-  # spydir CLI wrappers (spy-crack, …) land in /opt/spydir/bin on first boot.
   environment.extraInit = ''
     case ":$PATH:" in
       *:/opt/spydir/bin:*) ;;
@@ -160,35 +134,22 @@ in
     esac
   '';
 
-  # Sway/Hyprland are Wayland-only, so the generated config never turns X on,
-  # but the graphical login managers (LightDM always, SDDM's greeter) need it.
   services.xserver.enable = lib.mkIf (swayEnabled || hyprlandEnabled) true;
-  # LightDM starts a Wayland session a moment before it tears down the greeter's
-  # X server; Hyprland launched in that window comes up with no input devices at
-  # all. Hold the session back until X has let go (a fixed delay; X is gone
-  # about 0.4s after login).
   services.xserver.displayManager.sessionCommands = lib.mkIf lightdmEnabled ''
     [ "$XDG_SESSION_TYPE" = wayland ] && sleep 3
   '';
 
-  # --- SDDM greeter theme. The theme declares QtVersion=6, which NixOS's default
-  #     Qt5 SDDM rejects in favour of its built-in one, so use the Qt6 SDDM; and
-  #     `.theme` does not write [Theme] Current on this release, so set it
-  #     directly. ---
   services.displayManager.sddm.package = lib.mkForce pkgs.kdePackages.sddm;
   services.displayManager.sddm.settings.Theme.Current = "vendetta";
 
-  # --- GRUB boot splash (only on BIOS/GRUB installs; systemd-boot has no splash) ---
   boot.loader.grub.splashImage = lib.mkIf config.boot.loader.grub.enable ./vendetta-assets/grub-bg.png;
 
-  # --- Plymouth boot splash ---
   boot.plymouth = {
     enable = true;
     theme = "vendetta";
     themePackages = [ vendetta-plymouth ];
   };
 
-  # --- LightDM greeter rice (dark GTK greeter + Vendetta wallpaper) ---
   services.xserver.displayManager.lightdm.background =
     lib.mkIf lightdmEnabled wallpaperImg;
   services.xserver.displayManager.lightdm.greeters.gtk = lib.mkIf lightdmEnabled {
@@ -200,8 +161,6 @@ in
     '';
   };
 
-  # --- user avatar: seed the Vendetta sigil via AccountsService (SDDM + Plasma
-  #     both read it). Runs once before the greeter; never clobbers a user choice. ---
   systemd.services.vendetta-avatar = {
     description = "Vendetta Council OS — seed the sigil avatar for the primary user";
     wantedBy = [ "multi-user.target" ];
@@ -219,8 +178,6 @@ in
     '';
   };
 
-  # --- per-user rice via home-manager: fastfetch always; Plasma or the chosen
-  #     WM get their Vendetta configs. ---
   home-manager.useGlobalPkgs = true;
   home-manager.backupFileExtension = "vendetta.bak";
   home-manager.users.${username} = { ... }: {
@@ -228,8 +185,6 @@ in
     home.stateVersion = "@@nixosversion@@";
 
     home.file = lib.mkMerge [
-      # fastfetch + kitty + GTK dark: themed for every desktop (GTK settings make
-      # GTK apps dark even under WMs/Plasma, not just GNOME/Cinnamon/XFCE).
       {
         ".config/fastfetch/config.jsonc".source = ./vendetta-assets/fastfetch/config.jsonc;
         ".config/kitty/kitty.conf".source = ./vendetta-assets/kitty.conf;
@@ -237,7 +192,6 @@ in
         ".config/gtk-4.0/settings.ini".source = ./vendetta-assets/gtk/settings.ini;
       }
 
-      # Konsole: Vendetta profile + colorscheme (Plasma's terminal).
       (lib.mkIf plasmaEnabled {
         ".local/share/konsole/Vendetta.profile".source = ./vendetta-assets/konsole/Vendetta.profile;
         ".local/share/konsole/Vendetta.colorscheme".source = ./vendetta-assets/konsole/Vendetta.colorscheme;
@@ -285,7 +239,6 @@ in
       };
     };
 
-    # GNOME / Cinnamon rice: dark + teal accent + Vendetta wallpaper + terminal.
     dconf.settings = lib.mkIf (gnomeEnabled || cinnamonEnabled) {
       "org/gnome/desktop/interface" = {
         color-scheme = "prefer-dark";
@@ -308,13 +261,8 @@ in
         icon-theme = "Papirus-Dark";
         font-name = "Chakra Petch 10";
       };
-      # The Cinnamon shell theme (panel/menu/applets) — unset = default light.
-      # Mint-Y-Dark-Aqua is dark with a teal accent (ships with cinnamon).
       "org/cinnamon/theme" = { name = "Mint-Y-Dark-Aqua"; };
-      # Window borders: Muffin reads org.cinnamon.desktop.wm.preferences (NixOS
-      # defaults it to light Mint-Y), not the org.gnome key.
       "org/cinnamon/desktop/wm/preferences" = { theme = "Mint-Y-Dark-Aqua"; };
-      # libadwaita/GTK4 apps follow the xapp portal colour scheme under Cinnamon.
       "org/x/apps/portal" = { color-scheme = "prefer-dark"; };
       "org/gnome/terminal/legacy/profiles:" = {
         default = "b1dcc9dd-5262-4d8d-a863-c897e6d979b9";
@@ -335,8 +283,6 @@ in
       };
     };
 
-    # XFCE rice via xfconf (xfconf-query at activation — not read-only xml files,
-    # which xfconfd can't manage). Dark theme + fonts + wallpaper + xfwm4 deco.
     xfconf.settings = lib.mkIf xfceEnabled {
       xsettings = {
         "Net/ThemeName" = "Adwaita-dark";
@@ -349,13 +295,11 @@ in
         "general/title_font" = "Chakra Petch Bold 9";
       };
       xfce4-desktop = {
-        # cover the common monitor names (VMs = Virtual-1; many setups = monitor0)
         "backdrop/screen0/monitor0/workspace0/last-image" = wallpaperImg;
         "backdrop/screen0/monitor0/workspace0/image-style" = 5;
         "backdrop/screen0/monitorVirtual-1/workspace0/last-image" = wallpaperImg;
         "backdrop/screen0/monitorVirtual-1/workspace0/image-style" = 5;
       };
-      # xfce4-terminal: same palette as kitty/Konsole.
       xfce4-terminal = {
         "font-use-system" = false;
         "font-name" = "JetBrains Mono 11";
@@ -374,8 +318,6 @@ in
     };
   };
 
-  # --- spydirbyte toolkit: built on first boot (clones 12 repos + a venv; needs
-  #     network, so it can't be baked into the generated config). ---
   systemd.services.vendetta-spydir-setup = {
     description = "Vendetta Council OS — install the spydirbyte toolkit (first boot)";
     wantedBy = [ "multi-user.target" ];

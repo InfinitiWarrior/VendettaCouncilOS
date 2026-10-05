@@ -23,15 +23,14 @@ Output: `arch/out/vendetta-arch-amd64.iso`.
   identical looks. Nothing is duplicated in git.
 - **chaotic-aur**: supplies prebuilt `calamares`, `greetd-tuigreet`,
   `lightdm-slick-greeter` (`SigLevel=Never` only during the build).
-- **Live session**: autologin as `vendetta` into a Plasma **X11** session (most
-  reliable in VMs), installer launcher on the desktop.
+- **Live session**: autologin as `vendetta` into a Plasma Wayland session, installer launcher on the desktop.
 - **Install flow**: Calamares desktop chooser (KDE default + i3/Hyprland/Sway/
   XFCE/GNOME/Cinnamon, lean — only the pick is installed, KDE stripped) and a
   login chooser (sddm/lightdm/greetd, all preinstalled, switchable later with
   `sudo vendetta-dm <name>`). Calamares + the live-only user/autologin/polkit are
   removed from the target on install.
 
-## Known ceilings (test + iterate)
+## Known limitations
 
 - The non-KDE desktops install at install-time and need internet (parity with Debian).
 - Installed system keeps releng's `pacman.conf` (no chaotic-aur); add it back if

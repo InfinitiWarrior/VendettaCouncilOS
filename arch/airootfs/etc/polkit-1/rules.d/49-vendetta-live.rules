@@ -1,5 +1,3 @@
-// Live session: let the vendetta user run privileged actions (e.g. the
-// installer) without a password prompt. Removed on install.
 polkit.addRule(function(action, subject) {
     if (subject.user == "vendetta") { return polkit.Result.YES; }
 });

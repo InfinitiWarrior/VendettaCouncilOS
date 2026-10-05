@@ -41,27 +41,18 @@ let
   };
 in
 {
-  # --- identity / branding ---
   system.nixos.distroName = "Vendetta Council OS";
   system.nixos.distroId   = "vendetta";
   networking.hostName     = "vendetta";
   isoImage.isoName        = lib.mkForce "vendetta-nixos-amd64.iso";
-  # Rice the live ISO's boot menu (the installer's bootloader splash) — syslinux
-  # on BIOS, GRUB on UEFI. Separate from the installed-system GRUB rice.
-  # BIOS/isolinux menu runs at 800x600 and scales the background to fit, so a
-  # 16:9 image gets squished — use a letterboxed 800x600 (4:3) splash instead.
   isoImage.splashImage    = lib.mkForce ./assets/boot-splash-bios.png;
   isoImage.efiSplashImage = lib.mkForce ./assets/grub-bg.png;
-  # UEFI/GRUB: a theme always wins over efiSplashImage (and with no theme the
-  # stock menu colours are unreadable on a dark splash), so ship the same theme
-  # the Debian live ISO uses, over the Vendetta background.
   isoImage.grubTheme = pkgs.runCommand "vendetta-grub-theme" { } ''
     mkdir -p $out
     cp ${./assets/grub-theme/theme.txt} $out/theme.txt
     cp ${./assets/grub-bg.png} $out/background.png
   '';
 
-  # Vendetta plymouth splash on the live ISO too.
   boot.plymouth = {
     enable = true;
     theme = lib.mkForce "vendetta";
@@ -76,7 +67,6 @@ in
 
   fonts.packages = [ chakra-petch pkgs.jetbrains-mono ];
 
-  # --- full Plasma rice for the live `nixos` user via plasma-manager ---
   home-manager.useGlobalPkgs = true;
   home-manager.users.nixos = { ... }: {
     home.stateVersion = "25.05";
@@ -94,9 +84,6 @@ in
     };
   };
 
-  # --- rebrand Calamares: the NixOS ISO's installer branding comes from
-  #     calamares-nixos-extensions (shortProductName=NixOS, snowflake logo, blue
-  #     sidebar). Override it to Vendetta so the installer isn't stock NixOS. ---
   nixpkgs.overlays = [
     (final: prev: {
       calamares-nixos-extensions = prev.calamares-nixos-extensions.overrideAttrs (old: {
@@ -118,22 +105,12 @@ in
             "$bdir/branding.desc"
           cp -f ${./assets/sigil.png} "$bdir/vendetta-logo.png"
 
-          # align the installer flow to the Debian build: trimmed desktop list
-          # (plasma6/gnome/xfce/cinnamon + none), btrfs offered alongside ext4,
-          # and a simpler password step (reuse admin pw, no forced-strong default).
           mdir=$out/share/calamares/modules
           cp -f ${./calamares-conf/packagechooser.conf} "$mdir/packagechooser.conf"
           cp -f ${./calamares-conf/partition.conf}      "$mdir/partition.conf"
           cp -f ${./calamares-conf/users.conf}          "$mdir/users.conf"
-          # drop the NixOS-only "Unfree Software" step + add a login-manager
-          # chooser step (settings.conf) and its config.
           cp -f ${./calamares-conf/settings.conf}             "$out/share/calamares/settings.conf"
           cp -f ${./calamares-conf/packagechooser-login.conf} "$mdir/packagechooser-login.conf"
-          # patched nixos config-generator: writes the chosen DM (sddm/lightdm/
-          # greetd+tuigreet) from packagechooser_login instead of hardcoding it,
-          # AND lays the Vendetta module + assets into the target's /etc/nixos so
-          # the INSTALLED system (not just the live ISO) gets the Vendetta tools,
-          # fonts, branding, Plasma rice and spydir toolkit.
           ndir=$out/lib/calamares/modules/nixos
           cp -f ${./calamares-conf/nixos-main.py}       "$ndir/main.py"
           cp -f ${./calamares-conf/vendetta-system.nix} "$ndir/vendetta-system.nix"
@@ -145,7 +122,6 @@ in
     })
   ];
 
-  # the live ISO's nixos-install needs flakes enabled to build the target config
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   nixpkgs.config.allowUnfree = true;

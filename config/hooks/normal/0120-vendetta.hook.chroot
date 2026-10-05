@@ -1,32 +1,20 @@
 #!/bin/sh
-# Vendetta Council OS — apply branding as system-wide defaults.
-# Written to /etc/xdg rather than /etc/skel because Plasma overrides skel on
-# first run; /etc/xdg is the fallback layer that survives.
 set -e
 
 fc-cache -f >/dev/null 2>&1 || true
 
-# --- OS identity: nothing in normal use should say "Debian" ---
-# Our os-release ships at /usr/lib/os-release (includes.chroot), but base-files
-# leaves the stock Debian /etc/os-release — which is what fastfetch, lsb_release
-# and the GUIs actually read. Point /etc at ours (the Debian standard is for
-# /etc/os-release to be a symlink into /usr/lib anyway).
 ln -sf ../usr/lib/os-release /etc/os-release
-# lsb_release falls back to os-release when there's no /etc/lsb-release override.
 rm -f /etc/lsb-release
-# dpkg vendor string (dpkg-vendor, shown by some package GUIs).
 if [ -d /etc/dpkg/origins ]; then
 	cat > /etc/dpkg/origins/default <<'EOF'
 Vendor: Vendetta Council OS
 EOF
 fi
 
-# --- Plymouth ---
 plymouth-set-default-theme -R vendetta 2>/dev/null \
 	|| plymouth-set-default-theme vendetta \
 	|| echo "W: could not set plymouth theme (harmless in chroot)"
 
-# --- KDE / Plasma 6 ---
 KW=$(command -v kwriteconfig6 || command -v kwriteconfig5 || true)
 [ -n "$KW" ] || { echo "W: no kwriteconfig, skipping KDE defaults"; exit 0; }
 
@@ -38,10 +26,6 @@ MONO="JetBrains Mono,11,-1,5,50,0,0,0,0,0,Regular"
 "$KW" --file /etc/xdg/kdeglobals --group General --key AccentColor "55,230,216"
 "$KW" --file /etc/xdg/kdeglobals --group General --key widgetStyle kvantum
 
-# ColorScheme= only NAMES the scheme — apps still fall back to built-in Breeze
-# colours unless the actual [Colors:*] / [ColorEffects:*] / [WM] groups are
-# present in a kdeglobals they read. Merge them from the scheme file into the
-# xdg-wide kdeglobals so a fresh profile renders in Vendetta colours.
 CS=/usr/share/color-schemes/Vendetta.colors
 if [ -f "$CS" ]; then
 	awk '
@@ -59,26 +43,12 @@ fi
 "$KW" --file /etc/xdg/kdeglobals --group Icons --key Theme Papirus-Dark
 "$KW" --file /etc/xdg/kdeglobals --group KDE --key widgetStyle kvantum
 
-# Kvantum: default every new user to the Vendetta theme (flat, 0-radius).
-# (also shipped via includes.chroot/etc/skel; this is the belt-and-braces copy)
 install -d /etc/skel/.config/Kvantum
 printf '[General]\ntheme=Vendetta\n' > /etc/skel/.config/Kvantum/kvantum.kvconfig
-# Without this, Plasma never applies ANY look-and-feel defaults on a fresh
-# profile — it just boots on hardcoded internal defaults. org.vendetta.desktop
-# (shipped in usr/share/plasma/look-and-feel/) carries its own contents/defaults
-# with the same settings below, so first login applies everything in one shot
-# even if the /etc/xdg writes below were somehow missed.
 "$KW" --file /etc/xdg/kdeglobals --group KDE --key LookAndFeelPackage org.vendetta.desktop
 
-# Plasma desktop theme
 "$KW" --file /etc/xdg/plasmarc --group Theme --key name Vendetta
 
-# Window decoration: flat Breeze, no border, no gradient — recoloured near-black
-# by the Vendetta scheme. (The hand-rolled Aurorae "Vendetta" theme under
-# usr/share/aurorae/ is not conformant enough for KWin 6 to load — it silently
-# falls back to Breeze anyway. TODO: ship the working fallback; finish the
-# Aurorae SVG on a real KDE box and flip `library`/`theme` back when it renders.)
-# Plasma 6.3 (trixie) reads [org.kde.kdecoration3]; older reads ...2. Write both.
 for g in org.kde.kdecoration2 org.kde.kdecoration3; do
 	"$KW" --file /etc/xdg/kwinrc --group "$g" --key library org.kde.breeze
 	"$KW" --file /etc/xdg/kwinrc --group "$g" --key theme Breeze
@@ -91,23 +61,15 @@ done
 "$KW" --file /etc/xdg/breezerc --group Windeco --key TitleAlignment AlignLeft
 "$KW" --file /etc/xdg/breezerc --group Common --key OutlineCloseButton false
 
-# Konsole default profile
 "$KW" --file /etc/xdg/konsolerc --group "Desktop Entry" --key DefaultProfile Vendetta.profile
 
-# No auto screen-lock (live demo + kiosk friendliness; re-enable in Settings)
 "$KW" --file /etc/xdg/kscreenlockerrc --group Daemon --key Autolock false
 "$KW" --file /etc/xdg/kscreenlockerrc --group Daemon --key LockOnResume false
 
-# Lock screen wallpaper — same key shape as the desktop wallpaper (layout.js);
-# the greeter otherwise falls back to Debian's stock desktop-base background.
 "$KW" --file /etc/xdg/kscreenlockerrc --group Greeter --key WallpaperPlugin org.kde.image
 "$KW" --file /etc/xdg/kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General \
 	--key Image "file:///usr/share/wallpapers/Vendetta/"
 
-# User avatar — SDDM/kscreenlocker read it from AccountsService, which shows
-# Debian's default swirl for any account with no icon set. Keyed by username,
-# not uid, so this is safe to bake in at build time even though live-config
-# creates the actual account at boot (bootappend always sets username=vendetta).
 install -d /var/lib/AccountsService/icons /var/lib/AccountsService/users
 install -m 0644 /usr/share/vendetta/sigil.png /var/lib/AccountsService/icons/vendetta
 cat > /var/lib/AccountsService/users/vendetta <<-EOF
@@ -116,24 +78,15 @@ Icon=/var/lib/AccountsService/icons/vendetta
 SystemAccount=false
 EOF
 
-# Rebuild KDE's service/sycoca cache so the icon theme + .desktop overrides
-# (Papirus-Dark, the rebranded installer entry) are picked up on first boot.
 kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
 
-# GTK bridge (kde-gtk-config KDED module keeps this in sync per-session)
 "$KW" --file /etc/xdg/kdeglobals --group KDE --key GTKStyle Breeze
 
-# --- also seed a fresh user's own config so nothing at login can shadow it ---
-# /etc/xdg is only a fallback layer; a value that plasma writes into
-# ~/.config/kdeglobals early (e.g. widgetStyle) wins over it. Shipping the same
-# kdeglobals + kwinrc in /etc/skel means the user's OWN config already carries
-# our values from first boot.
 install -d /etc/skel/.config
 cp /etc/xdg/kdeglobals      /etc/skel/.config/kdeglobals
 cp /etc/xdg/kwinrc          /etc/skel/.config/kwinrc
 cp /etc/xdg/breezerc        /etc/skel/.config/breezerc
 cp /etc/xdg/kscreenlockerrc /etc/skel/.config/kscreenlockerrc
 
-# --- boot speed: nothing on this desktop waits for the network to come up ---
 systemctl disable NetworkManager-wait-online.service 2>/dev/null || true
 systemctl mask   NetworkManager-wait-online.service 2>/dev/null || true

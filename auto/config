@@ -1,6 +1,4 @@
 #!/bin/sh
-# Vendetta Council OS — live-build configuration.
-# `lb config` runs this file. Edit knobs here, not in config/*.
 set -e
 
 lb config noauto \

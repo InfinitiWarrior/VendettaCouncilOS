@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
 #   SPDX-FileCopyrightText: 2022 Victor Fuentes <vmfuentes64@gmail.com>
 #   SPDX-FileCopyrightText: 2019 Adriaan de Groot <groot@kde.org>
 #   SPDX-License-Identifier: GPL-3.0-or-later
-#
 #   Calamares is Free Software: see the License-Identifier above.
-#
 
 import configparser
 import libcalamares
@@ -22,10 +18,6 @@ _ = gettext.translation(
     languages=libcalamares.utils.gettext_languages(),
     fallback=True,
 ).gettext
-
-
-# The following strings contain pieces of a nix-configuration file.
-# They are adapted from the default config generated from the nixos-generate-config command.
 
 cfghead = """# Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
@@ -363,13 +355,10 @@ def generateProxyStrings():
 def pretty_name():
     return _("Installing NixOS.")
 
-
 status = pretty_name()
-
 
 def pretty_status_message():
     return status
-
 
 def catenate(d, key, *values):
     """
@@ -383,7 +372,6 @@ def catenate(d, key, *values):
 
     d[key] = "".join(values)
 
-
 def run():
     """NixOS Configuration."""
 
@@ -395,12 +383,10 @@ def run():
     ngc_cfg["Defaults"] = { "Kernel": "lts" }
     ngc_cfg.read("/etc/nixos-generate-config.conf")
 
-    # Create initial config file
     cfg = cfghead
     gs = libcalamares.globalstorage
     variables = dict()
 
-    # Setup variables
     root_mount_point = gs.value("rootMountPoint")
     config = os.path.join(root_mount_point, "etc/nixos/configuration.nix")
     fw_type = gs.value("firmwareType")
@@ -410,9 +396,6 @@ def run():
         else gs.value("bootLoader")["installPath"]
     )
 
-    # Pick config parts and prepare substitution
-
-    # Check bootloader
     if fw_type == "efi":
         cfg += cfgbootefi
     elif bootdev != "nodev":
@@ -424,7 +407,6 @@ def run():
     if ngc_cfg["Defaults"]["Kernel"] == "latest":
         cfg += cfglatestkernel
 
-    # Setup encrypted swap devices. nixos-generate-config doesn't seem to notice them.
     for part in gs.value("partitions"):
         if (
             part["claimed"] is True
@@ -436,7 +418,6 @@ def run():
                 part["luksMapperName"], part["uuid"]
             )
 
-    # Check partitions
     root_is_encrypted = False
     boot_is_encrypted = False
     boot_is_partition = False
@@ -448,7 +429,6 @@ def run():
             boot_is_partition = True
             boot_is_encrypted = part["fsName"] in ["luks", "luks2"]
 
-    # Setup keys in /boot/crypto_keyfile if using BIOS and Grub cryptodisk
     if fw_type != "efi" and (
         (boot_is_partition and boot_is_encrypted)
         or (root_is_encrypted and not boot_is_partition)
@@ -463,7 +443,6 @@ def run():
             libcalamares.utils.host_env_process_output(
                 ["chmod", "0700", root_mount_point + "/boot"], None
             )
-            # Create /boot/crypto_keyfile.bin
             libcalamares.utils.host_env_process_output(
                 [
                     "dd",
@@ -495,7 +474,6 @@ def run():
                     part["luksMapperName"]
                 )
                 try:
-                    # Grub currently only supports pbkdf2 for luks2
                     libcalamares.utils.host_env_process_output(
                         [
                             "cryptsetup",
@@ -509,7 +487,6 @@ def run():
                         None,
                         part["luksPassphrase"],
                     )
-                    # Add luks drives to /boot/crypto_keyfile.bin
                     libcalamares.utils.host_env_process_output(
                         [
                             "cryptsetup",
@@ -583,7 +560,6 @@ def run():
             for conf in localeconf:
                 catenate(variables, conf, localeconf.get(conf).split("/")[0])
 
-    # Choose desktop environment
     if gs.value("packagechooser_packagechooser") == "gnome":
         cfg += cfggnome
     elif gs.value("packagechooser_packagechooser") == "plasma6":
@@ -613,7 +589,6 @@ def run():
     elif gs.value("packagechooser_packagechooser") == "sway":
         cfg += cfgsway
 
-    # Vendetta: honor the login-manager choice (packagechooser@login)
     _vdesktop = gs.value("packagechooser_packagechooser")
     if _vdesktop is not None and _vdesktop != "":
         _vlogin = gs.value("packagechooser_login")
@@ -621,10 +596,6 @@ def run():
             cfg += "  services.xserver.displayManager.lightdm.enable = true;\n"
         elif _vlogin == "greetd":
             cfg += "  services.greetd.enable = true;\n"
-            # tuigreet defaults to /usr/share/{x,wayland}-sessions, which don't
-            # exist on NixOS, so it finds no sessions and the login just loops.
-            # Point it at the NixOS session dirs (xsessions for X11 — tuigreet
-            # 0.9.x wraps those with startx — and wayland-sessions).
             _dt = "${config.services.displayManager.sessionData.desktops}"
             _tui = ("${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --asterisks "
                     "--greeting 'VENDETTA COUNCIL OS  —  Ideas are bulletproof' "
@@ -669,7 +640,6 @@ def run():
                 if line.startswith("#"):
                     continue
                 out.append(line.split())
-            # Find rows with same layout
             find = []
             for row in out:
                 if gs.value("keyboardLayout") == row[1]:
@@ -682,12 +652,10 @@ def run():
                 variant = gs.value("keyboardVariant")
             else:
                 variant = "-"
-            # Find rows with same variant
             for row in find:
                 if variant in row[3]:
                     vconsole = row[0]
                     break
-                # If none found set to "us"
             if vconsole != "" and vconsole != "us" and vconsole is not None:
                 try:
                     subprocess.check_output(
@@ -732,7 +700,6 @@ def run():
     if gs.value("packagechooser_packagechooser") != "":
         cfg += cfgfirefox
 
-    # Check if unfree packages are allowed
     free = True
     if gs.value("packagechooser_unfree") is not None:
         if gs.value("packagechooser_unfree") == "unfree":
@@ -740,7 +707,6 @@ def run():
             cfg += cfgunfree
 
     cfg += cfgpkgs
-    # Use firefox as default as a graphical web browser, and add kate to plasma desktop
     if gs.value("packagechooser_packagechooser") == "plasma6":
         catenate(
             variables, "pkgs", "\n      kdePackages.kate\n    #  thunderbird\n    "
@@ -754,13 +720,11 @@ def run():
     version = ".".join(subprocess.getoutput(["nixos-version"]).split(".")[:2])[:5]
     catenate(variables, "nixosversion", version)
 
-    # Check that all variables are used
     for key in variables.keys():
         pattern = "@@{key}@@".format(key=key)
         if pattern not in cfg:
             libcalamares.utils.warning("Variable '{key}' is not used.".format(key=key))
 
-    # Check that all patterns exist
     variable_pattern = re.compile(r"@@\w+@@")
     for match in variable_pattern.finditer(cfg):
         variable_name = cfg[match.start() + 2 : match.end() - 2]
@@ -769,7 +733,6 @@ def run():
                 "Variable '{key}' is used but not defined.".format(key=variable_name)
             )
 
-    # Do the substitutions
     for key in variables.keys():
         pattern = "@@{key}@@".format(key=key)
         cfg = cfg.replace(pattern, str(variables[key]))
@@ -778,7 +741,6 @@ def run():
     libcalamares.job.setprogress(0.25)
 
     try:
-        # Generate hardware.nix with mounted swap device
         subprocess.check_output(
             ["pkexec", "nixos-generate-config", "--root", root_mount_point],
             stderr=subprocess.STDOUT,
@@ -788,17 +750,14 @@ def run():
             libcalamares.utils.error(e.output.decode("utf8"))
         return (_("nixos-generate-config failed"), _(e.output.decode("utf8")))
 
-    # Check for unfree stuff in hardware-configuration.nix
     hf = open(root_mount_point + "/etc/nixos/hardware-configuration.nix", "r")
     htxt = hf.read()
     search = re.search(r"boot\.extraModulePackages = \[ (.*) \];", htxt)
 
-    # Check if any extraModulePackages are defined, and remove if only free packages are allowed
     if search is not None and free:
         expkgs = search.group(1).split(" ")
         for pkg in expkgs:
             p = ".".join(pkg.split(".")[3:])
-            # Check package p is unfree
             isunfree = subprocess.check_output(
                 [
                     "nix-instantiate",
@@ -826,7 +785,6 @@ def run():
             ),
             htxt,
         )
-        # Write the hardware-configuration.nix file
         libcalamares.utils.host_env_process_output(
             [
                 "cp",
@@ -837,13 +795,6 @@ def run():
             hardwareout,
         )
 
-    # Vendetta: lay the Vendetta module + its assets into the target's
-    # /etc/nixos so the generated configuration.nix (which then imports
-    # ./vendetta.nix) brings in the Vendetta tools, fonts, branding, Plasma rice
-    # and spydir toolkit. NixOS regenerates its config (doesn't clone the live
-    # system), so this is how the installed system gets the Vendetta look.
-    # Only wire up the import if the copy actually succeeds — otherwise the
-    # install would fail on a missing ./vendetta.nix.
     try:
         moduledir = os.path.dirname(os.path.abspath(__file__))
         etcnixos = os.path.join(root_mount_point, "etc/nixos")
@@ -869,13 +820,11 @@ def run():
     except Exception as e:
         libcalamares.utils.warning("Vendetta: module install failed, skipping ({})".format(e))
 
-    # Write the configuration.nix file
     libcalamares.utils.host_env_process_output(["cp", "/dev/stdin", config], None, cfg)
 
     status = _("Installing NixOS")
     libcalamares.job.setprogress(0.3)
 
-    # build nixos-install command
     nixosInstallCmd = [ "pkexec" ]
     nixosInstallCmd.extend(generateProxyStrings())
     nixosInstallCmd.extend(
@@ -887,7 +836,6 @@ def run():
         ]
     )
 
-    # Install customizations
     try:
         output = ""
         proc = subprocess.Popen(

@@ -1,12 +1,4 @@
 #!/bin/sh
-# Vendetta Council OS — install the chosen desktop and strip KDE for a lean
-# system. Run by Calamares contextualprocess in the TARGET, keyed on the
-# packagechooser `desktop` selection (packagechooser legacy method only records
-# the choice; it does not install — so we do it here explicitly).
-#
-# Logs everything to /var/log/vendetta-install.log on the installed system.
-# KDE is only purged if the chosen desktop actually installed, so a failed
-# network install leaves a working KDE rather than no desktop at all.
 set -u
 id="${1:-}"
 L=/var/log/vendetta-install.log
@@ -17,9 +9,6 @@ KDE="kde-plasma-desktop plasma-desktop plasma-workspace plasma-workspace-wayland
      okular kde-spectacle plasma-desktop-data"
 WALL=/usr/share/wallpapers/Vendetta/contents/images/1920x1080.png
 
-# Write the Vendetta greeter theming after the DM packages are installed (these
-# paths are package conffiles — shipping them in the image causes dpkg conffile
-# conflicts that break the whole apt run, so we write them here instead).
 vendetta_write_dm_configs() {
     install -d /etc/lightdm/lightdm.conf.d /etc/greetd
     printf '[Seat:*]\ngreeter-session=slick-greeter\n' > /etc/lightdm/lightdm.conf.d/60-vendetta.conf
@@ -48,12 +37,7 @@ echo "running as $(id -un 2>/dev/null) in root='$(cat /etc/hostname 2>/dev/null)
 
 export DEBIAN_FRONTEND=noninteractive
 
-# Alternative login managers on EVERY install (best-effort; needs network).
-# They can't ship in the live image — their live-config scripts fight over the
-# live session's autologin and break the boot-to-installer — so install them on
-# the TARGET here. SDDM stays the default; switch with `vendetta-dm`.
 echo "--- login managers (lightdm/slick-greeter/greetd) ---" >> "$L"
-# greetd runs its session as this user — create it before installing greetd.
 id greeter >/dev/null 2>&1 || useradd -M -G video,input -s /usr/sbin/nologin greeter >> "$L" 2>&1 || true
 apt-get update >> "$L" 2>&1
 if apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \
@@ -68,14 +52,11 @@ else
     echo "  (login managers skipped — offline or install error)" >> "$L"
 fi
 
-bp_pkgs=""   # packages that only live in trixie-backports
+bp_pkgs=""
 case "$id" in
     kde|"") echo "KDE (or no choice) — login managers set up above; done" >> "$L"; echo "DONE $(date -u)" >> "$L"; exit 0 ;;
     i3)     pkgs="xserver-xorg xinit i3 i3status rofi feh dunst picom network-manager-gnome"; sentinel="i3" ;;
     hyprland)
-        # Hyprland is only in backports; enable it in the target first. swww
-        # (wallpaper daemon) isn't packaged — it ships as a prebuilt binary in
-        # /usr/local/bin via includes.chroot, so it's not installed here.
         echo "deb http://deb.debian.org/debian trixie-backports main" \
             > /etc/apt/sources.list.d/vendetta-backports.list
         pkgs="waybar wofi mako-notifier network-manager-gnome grim slurp xdg-desktop-portal-gtk polkitd"
@@ -85,16 +66,12 @@ case "$id" in
         pkgs="sway swaybg waybar wofi mako-notifier network-manager-gnome grim slurp polkitd"
         sentinel="sway" ;;
     xfce)
-        # xserver-xorg is not pulled by the xfce4 metapackage on trixie — without
-        # it the X session can't start (black screen + underscore after login).
         pkgs="xserver-xorg xinit xfce4 xfce4-terminal xfce4-goodies network-manager-gnome"
         sentinel="xfce4-session" ;;
     gnome)
         pkgs="gnome-core gnome-terminal dconf-cli"
         sentinel="gnome-shell" ;;
     cinnamon)
-        # dconf-cli provides `dconf update` (applies the Vendetta dark+wallpaper
-        # defaults) — cinnamon-core doesn't pull it.
         pkgs="xserver-xorg xinit cinnamon-core gnome-terminal dconf-cli network-manager-gnome"
         sentinel="cinnamon" ;;
     *)      echo "unknown desktop id '$id' — leaving KDE in place" >> "$L"; exit 0 ;;
@@ -107,19 +84,14 @@ APT="apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-co
 
 if dpkg -s "$sentinel" 2>/dev/null | grep -q "^Status: install ok installed"; then
     echo "--- '$sentinel' installed (configured); protecting essentials + purging KDE ---" >> "$L"
-    # Keep base essentials that were pulled in as auto deps, so the following
-    # autoremove doesn't strip them along with KDE (sudo especially — losing it
-    # leaves the account with no admin access). vendetta-desktop keeps our tools.
     apt-mark manual sudo network-manager network-manager-gnome sddm \
         vendetta-desktop rsync openssh-client \
         lightdm slick-greeter greetd >> "$L" 2>&1 || true
     apt-get -y purge $KDE >> "$L" 2>&1
     apt-get -y autoremove --purge >> "$L" 2>&1
 
-    # per-desktop finishing touches
     case "$id" in
         gnome)
-            # gnome-core pulls gdm3 — keep the Vendetta SDDM greeter instead.
             echo "--- keeping SDDM (disabling gdm3) + dconf theme ---" >> "$L"
             systemctl disable gdm3 >> "$L" 2>&1 || true
             systemctl enable sddm  >> "$L" 2>&1 || true
@@ -130,8 +102,6 @@ if dpkg -s "$sentinel" 2>/dev/null | grep -q "^Status: install ok installed"; th
             dconf update >> "$L" 2>&1 || true
             rm -f /usr/share/wayland-sessions/cinnamon-wayland.desktop ;;
         xfce)
-            # the xfce-wayland session black-screens in VMs / without a wlroots
-            # compositor — keep only the reliable X11 session.
             echo "--- forcing X11 xfce session ---" >> "$L"
             rm -f /usr/share/wayland-sessions/xfce-wayland.desktop ;;
     esac

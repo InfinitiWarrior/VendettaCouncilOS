@@ -1,13 +1,7 @@
 #!/bin/sh
-# Backstop: force-apply the Vendetta look-and-feel once, on first KDE login.
-# The colour scheme, widget style, decoration and wallpaper are already seeded
-# via /etc/skel + the panel layout script — this just makes sure cursor theme,
-# splash and a live plasma/kwin reload happen too. Retries next login if the
-# session wasn't ready yet (marker is only written on success).
 MARKER="$HOME/.config/vendetta-theme-applied"
 [ -f "$MARKER" ] && exit 0
 
-# give plasmashell/kwin a moment to come up
 sleep 5
 
 if plasma-apply-lookandfeel org.vendetta.desktop; then

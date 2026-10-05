@@ -1,8 +1,4 @@
 #!/bin/sh
-# Vendetta Council OS (Arch) — apply KDE/Plasma branding as system-wide defaults.
-# Ported from the Debian build's 0120 hook; runs inside the airootfs chroot via
-# customize_airootfs.sh. Writes to /etc/xdg (the fallback layer Plasma honours on
-# a fresh profile) and seeds the same values into /etc/skel.
 set -e
 fc-cache -f >/dev/null 2>&1 || true
 
@@ -58,8 +54,6 @@ done
 "$KW" --file /etc/xdg/kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General \
 	--key Image "file:///usr/share/wallpapers/Vendetta/"
 
-# User avatar for the live `vendetta` user (installed accounts get it at runtime
-# via vendetta-avatar.service, which keys on uid 1000).
 install -d /var/lib/AccountsService/icons /var/lib/AccountsService/users
 if [ -f /usr/share/vendetta/sigil.png ]; then
 	install -m 0644 /usr/share/vendetta/sigil.png /var/lib/AccountsService/icons/vendetta

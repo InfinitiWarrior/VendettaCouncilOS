@@ -1,10 +1,4 @@
 #!/bin/sh
-# Vendetta Council OS (Fedora) — install the chosen desktop and strip KDE for a
-# lean system. Run by Calamares contextualprocess in the target, keyed on the
-# packagechooser `desktop` selection. KDE is purged only if the chosen DE
-# actually installed, so a failed (offline) install leaves a working KDE.
-# The three login managers ship preinstalled; this handles only the desktop.
-# Logs to /var/log/vendetta-install.log on the installed system.
 set -u
 id="${1:-}"
 L=/var/log/vendetta-install.log
@@ -22,30 +16,24 @@ case "$id" in
     *) echo "unknown desktop id '$id' — leaving KDE in place" >> "$L"; exit 0 ;;
 esac
 
-# Fedora does not package Hyprland (or swww); they come from this COPR, which is
-# only added when Hyprland is the chosen desktop.
 if [ "$id" = hyprland ]; then
     $DNF install dnf5-plugins >> "$L" 2>&1
     dnf -y copr enable sdegler/hyprland >> "$L" 2>&1
 fi
 
 echo "--- installing: $pkgs ---" >> "$L"
-# rpm replaces our themed defaults in /etc/xdg/xfce4 with the stock ones; put ours back
 cp -a /etc/xdg/xfce4 /tmp/vendetta-xfce4
 $DNF install $pkgs >> "$L" 2>&1
 cp -a /tmp/vendetta-xfce4/. /etc/xdg/xfce4/
 
 if rpm -q "$sentinel" >/dev/null 2>&1; then
     echo "--- '$sentinel' installed; protecting essentials + purging KDE ---" >> "$L"
-    # keep these across the KDE removal + autoremove
     dnf -y mark user sddm NetworkManager lightdm greetd >> "$L" 2>&1 || true
-    # the KDE release package marks plasma-desktop as protected, which blocks the removal
     rm -f /etc/dnf/protected.d/plasma-desktop.conf
-    # removing plasma-workspace cascades to the KDE stack via reverse-deps
     dnf -y remove plasma-workspace plasma-desktop >> "$L" 2>&1
     dnf -y autoremove >> "$L" 2>&1
     case "$id" in
-        xfce) rm -f /usr/share/wayland-sessions/xfce-wayland.desktop ;;  # black-screens in VMs
+        xfce) rm -f /usr/share/wayland-sessions/xfce-wayland.desktop ;;
         gnome|cinnamon) dconf update >> "$L" 2>&1 || true ;;
     esac
     echo "--- lean $id install complete ---" >> "$L"

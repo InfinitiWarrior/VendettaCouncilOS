@@ -1,8 +1,4 @@
 #!/bin/sh
-# Vendetta Council OS (Arch) — switch the active login manager, then reboot.
-#   sudo vendetta-dm <sddm|lightdm|greetd>
-# All three ship preinstalled; this just flips which systemd unit owns
-# display-manager.service. No-ops safely if the chosen one isn't installed.
 set -eu
 dm="${1:-}"
 case "$dm" in
@@ -14,7 +10,6 @@ esac
 [ "$(id -u)" -eq 0 ] || { echo "run this as root (sudo vendetta-dm $dm)"; exit 1; }
 [ -x "$bin" ] || { echo "'$dm' is not installed; leaving the current login manager."; exit 0; }
 for d in sddm lightdm greetd; do systemctl disable "$d.service" >/dev/null 2>&1 || true; done
-# each DM unit carries Alias=display-manager.service, so enabling sets the symlink.
 ln -sf "/usr/lib/systemd/system/$dm.service" /etc/systemd/system/display-manager.service
 systemctl enable "$dm.service" >/dev/null 2>&1 || true
 echo "Login manager set to '$dm'. Reboot to use it."

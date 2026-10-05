@@ -8,8 +8,5 @@ Version=1.0
 MainScript=Main.qml
 ConfigFile=theme.conf
 Theme-Id=vendetta
-# Without these two, SDDM 0.21 assumes a Qt5 theme and looks for the missing
-# /usr/bin/sddm-greeter (Qt5) → rejects the theme and uses the white fallback.
-# Qt6 greeter is /usr/bin/sddm-greeter-qt6; the bundled Breeze theme sets these.
 Theme-API=2.0
 QtVersion=6

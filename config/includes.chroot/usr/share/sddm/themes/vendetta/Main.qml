@@ -1,15 +1,10 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-// Note: sddm, sessionModel, userModel and config are injected as context
-// properties by the greeter — do NOT `import SDDM`, that module doesn't exist
-// in SDDM 0.21 and importing it makes the whole theme fail to load (→ white
-// fallback greeter). The bundled Breeze theme uses them the same way.
 
 Rectangle {
     id: root
     color: "#04090A"
 
-    // palette
     readonly property color cyan:   "#37E6D8"
     readonly property color text:   "#CFE6E6"
     readonly property color muted:  "#5A6E70"
@@ -17,7 +12,6 @@ Rectangle {
     readonly property color panelC: "#0A1416"
     readonly property color error:  "#D63C48"
 
-    // ---- backdrop: big dim sigil + faint scanlines ----
     Image {
         anchors.centerIn: parent
         anchors.verticalCenterOffset: -40
@@ -36,7 +30,6 @@ Rectangle {
         }
     }
 
-    // ---- clock ----
     Column {
         id: clockCol
         anchors.horizontalCenter: parent.horizontalCenter
@@ -66,7 +59,6 @@ Rectangle {
         }
     }
 
-    // ---- login panel ----
     Rectangle {
         id: panel
         width: 360
@@ -78,7 +70,6 @@ Rectangle {
         border.color: root.line
         border.width: 1
 
-        // top accent bar
         Rectangle { anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right; height: 2; color: root.cyan }
 
         Column {
@@ -165,7 +156,6 @@ Rectangle {
         }
     }
 
-    // hidden session model reader (drives the flat cycler below)
     ComboBox {
         id: sessionBox
         visible: false
@@ -178,7 +168,6 @@ Rectangle {
         sddm.login(username.text, password.text, sessionBox.currentIndex)
     }
 
-    // ---- bottom bar: session (left) + power (right) ----
     Text {
         id: sessionSel
         anchors.left: parent.left; anchors.bottom: parent.bottom
@@ -214,7 +203,6 @@ Rectangle {
         }
     }
 
-    // tagline
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom; anchors.bottomMargin: 24

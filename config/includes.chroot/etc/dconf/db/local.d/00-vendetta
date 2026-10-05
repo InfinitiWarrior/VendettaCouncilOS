@@ -1,4 +1,3 @@
-# Vendetta Council OS — dark + wallpaper + accent defaults (GNOME & Cinnamon).
 [org/gnome/desktop/interface]
 color-scheme='prefer-dark'
 gtk-theme='Adwaita-dark'
@@ -26,7 +25,6 @@ font-name='Chakra Petch 10'
 [org/x/desktop/wm/preferences]
 theme='Adwaita-dark'
 
-# gnome-terminal / cinnamon terminal — Vendetta near-black + cyan
 [org/gnome/terminal/legacy/profiles:]
 default='b1dcc9dd-5262-4d8d-a863-c897e6d979b9'
 list=['b1dcc9dd-5262-4d8d-a863-c897e6d979b9']

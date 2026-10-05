@@ -1,10 +1,9 @@
 #!/bin/sh
-# Regenerate the shipped wallpapers from brand/sigil.png. Needs ImageMagick.
 set -e
 cd "$(dirname "$0")/.."
 OUT=config/includes.chroot/usr/share/wallpapers/Vendetta/contents/images
 mkdir -p "$OUT"
-gen() { # w h sigilpx outfile
+gen() {
 	magick -size "${1}x${2}" radial-gradient:'#0B2124'-'#04090A' \
 		\( brand/sigil.png -resize "${3}x${3}" -alpha set -channel A -evaluate multiply 0.40 +channel \) \
 		-gravity center -composite -depth 8 "$4"

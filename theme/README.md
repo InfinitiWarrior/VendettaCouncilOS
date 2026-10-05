@@ -69,7 +69,7 @@ look-and-feel package (applied on first KDE login by
 - **Custom Plasma theme SVGs** beyond the panel background + task indicator
   (button / slider / checkbox shapes still come from Breeze — the color scheme
   recolours them, Kvantum handles the Qt-app side).
-- **Panel translucency/blur.** Brief asks 82% + blur; current panel is opaque
+- **Panel translucency/blur.** The panel is opaque
   near-black (cleaner, matches "no glows"). Flip in `panel-background.svg` if
   wanted.
 

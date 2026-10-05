@@ -1,9 +1,4 @@
 #!/bin/sh
-# Give the primary (uid 1000) account the Vendetta sigil avatar via
-# AccountsService — which Plasma/SDDM actually read. The live user is seeded at
-# build time by hook 0120, but a Calamares-installed account is named by the
-# user, so its avatar must be seeded at runtime. Idempotent; never clobbers a
-# user-chosen icon or Calamares' other [User] keys (Session/Language/...).
 set -e
 u=$(awk -F: '$3>=1000 && $3<65000 {print $1; exit}' /etc/passwd)
 [ -n "$u" ] || exit 0
@@ -11,7 +6,6 @@ u=$(awk -F: '$3>=1000 && $3<65000 {print $1; exit}' /etc/passwd)
 users=/var/lib/AccountsService/users
 icons=/var/lib/AccountsService/icons
 
-# already has an icon (user picked one, or we ran before)? leave everything.
 [ -f "$users/$u" ] && grep -q '^Icon=' "$users/$u" && exit 0
 
 install -d "$icons" "$users"

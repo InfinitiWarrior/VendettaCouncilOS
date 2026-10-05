@@ -1,16 +1,11 @@
--- Vendetta Council OS — Hyprland (Lua config; near-black #04090A / cyan #37E6D8).
--- Hyprland switched to a Lua config API (hl.*); see https://wiki.hypr.land
-
 local terminal = "kitty"
 local menu     = "wofi --show drun"
 
--- monitors: sane default
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 
--- look & feel
 hl.config({
     general = {
         gaps_in     = 6,
@@ -22,7 +17,7 @@ hl.config({
         layout = "dwindle",
     },
     decoration = {
-        rounding = 0,          -- flat, matches the Vendetta brand
+        rounding = 0,
         active_opacity   = 1.0,
         inactive_opacity = 0.94,
         blur = { enabled = true, size = 6, passes = 2, vibrancy = 0.15 },
@@ -33,8 +28,6 @@ hl.config({
     input = { kb_layout = "us", follow_mouse = 1, sensitivity = 0.0 },
 })
 
--- autostart: bar, notifications, network tray, and the swww wallpaper.
--- swww needs its daemon up first, then `swww img` — hence the short sleep.
 hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
     hl.exec_cmd("mako")
@@ -43,7 +36,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("sh -c 'sleep 1; swww img /usr/share/wallpapers/Vendetta/contents/images/1920x1080.png --transition-type grow --transition-pos center --transition-fps 60'")
 end)
 
--- keybinds
 local mod = "SUPER"
 hl.bind(mod .. " + Return",   hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + D",        hl.dsp.exec_cmd(menu))
@@ -53,13 +45,11 @@ hl.bind(mod .. " + V",        hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mod .. " + F",        hl.dsp.window.fullscreen())
 hl.bind(mod .. " + J",        hl.dsp.layout("togglesplit"))
 
--- focus
 hl.bind(mod .. " + left",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mod .. " + up",    hl.dsp.focus({ direction = "up" }))
 hl.bind(mod .. " + down",  hl.dsp.focus({ direction = "down" }))
 
--- workspaces 1-5
 for i = 1, 5 do
     local key = tostring(i)
     hl.bind(mod .. " + " .. key,         hl.dsp.focus({ workspace = i }))

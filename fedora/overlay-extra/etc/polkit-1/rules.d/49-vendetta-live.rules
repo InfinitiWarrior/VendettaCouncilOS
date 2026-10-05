@@ -1,5 +1,3 @@
-// Live session: let the liveuser run privileged actions (the installer) without
-// a password prompt. Removed on install.
 polkit.addRule(function(action, subject) {
     if (subject.user == "liveuser") { return polkit.Result.YES; }
 });
