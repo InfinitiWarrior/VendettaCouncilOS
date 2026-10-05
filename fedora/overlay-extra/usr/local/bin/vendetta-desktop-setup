@@ -35,7 +35,9 @@ $DNF install $pkgs >> "$L" 2>&1
 if rpm -q "$sentinel" >/dev/null 2>&1; then
     echo "--- '$sentinel' installed; protecting essentials + purging KDE ---" >> "$L"
     # keep these across the KDE removal + autoremove
-    dnf mark user sddm NetworkManager lightdm greetd >> "$L" 2>&1 || true
+    dnf -y mark user sddm NetworkManager lightdm greetd >> "$L" 2>&1 || true
+    # the KDE release package marks plasma-desktop as protected, which blocks the removal
+    rm -f /etc/dnf/protected.d/plasma-desktop.conf
     # removing plasma-workspace cascades to the KDE stack via reverse-deps
     dnf -y remove plasma-workspace plasma-desktop >> "$L" 2>&1
     dnf -y autoremove >> "$L" 2>&1
