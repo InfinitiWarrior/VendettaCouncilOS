@@ -30,7 +30,10 @@ if [ "$id" = hyprland ]; then
 fi
 
 echo "--- installing: $pkgs ---" >> "$L"
+# rpm replaces our themed defaults in /etc/xdg/xfce4 with the stock ones; put ours back
+cp -a /etc/xdg/xfce4 /tmp/vendetta-xfce4
 $DNF install $pkgs >> "$L" 2>&1
+cp -a /tmp/vendetta-xfce4/. /etc/xdg/xfce4/
 
 if rpm -q "$sentinel" >/dev/null 2>&1; then
     echo "--- '$sentinel' installed; protecting essentials + purging KDE ---" >> "$L"
@@ -42,6 +45,7 @@ if rpm -q "$sentinel" >/dev/null 2>&1; then
     dnf -y remove plasma-workspace plasma-desktop >> "$L" 2>&1
     dnf -y autoremove >> "$L" 2>&1
     case "$id" in
+        xfce) rm -f /usr/share/wayland-sessions/xfce-wayland.desktop ;;  # black-screens in VMs
         gnome|cinnamon) dconf update >> "$L" 2>&1 || true ;;
     esac
     echo "--- lean $id install complete ---" >> "$L"

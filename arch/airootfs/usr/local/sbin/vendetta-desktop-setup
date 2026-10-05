@@ -45,7 +45,11 @@ esac
 
 echo "--- syncing + installing: $pkgs ---" >> "$L"
 pacman -Sy --noconfirm >> "$L" 2>&1
-$PAC $pkgs >> "$L" 2>&1
+# Our themed defaults in /etc/xdg/xfce4 are files the Xfce packages also own:
+# let pacman overwrite them, then put ours back.
+cp -a /etc/xdg/xfce4 /tmp/vendetta-xfce4
+$PAC --overwrite 'etc/xdg/xfce4/*' $pkgs >> "$L" 2>&1
+cp -a /tmp/vendetta-xfce4/. /etc/xdg/xfce4/
 
 if pacman -Qq "$sentinel" >/dev/null 2>&1; then
     echo "--- '$sentinel' installed; purging KDE ---" >> "$L"
@@ -54,6 +58,9 @@ if pacman -Qq "$sentinel" >/dev/null 2>&1; then
     [ -n "$rm_list" ] && pacman -Rns --noconfirm $rm_list >> "$L" 2>&1
 
     case "$id" in
+        xfce)
+            # the xfce-wayland session black-screens in VMs; keep the X11 one
+            rm -f /usr/share/wayland-sessions/xfce-wayland.desktop ;;
         hyprland)
             # Arch renamed swww to awww; the shared Hyprland config still calls swww.
             ln -sf /usr/bin/awww /usr/local/bin/swww
