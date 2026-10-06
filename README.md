@@ -12,6 +12,18 @@ that lets you pick your desktop and login manager.
 | Fedora | Fedora 43 KDE | `livecd-creator` | `fedora/out/vendetta-fedora-amd64.iso` |
 | NixOS | NixOS 25.05 | flake | `vendetta-nixos-amd64.iso` |
 
+## Downloads (v1)
+
+Verify an image after downloading with `sha256sum -c SHA256SUMS` (the file is in
+this repository) or compare against the table.
+
+| Image | SHA-256 |
+|---|---|
+| `live-image-amd64.hybrid.iso` (Debian) | `c9d63d7d3808e775985c21ffde87cc94d1109853c8967f00fb91b7fd552d346f` |
+| `vendetta-arch-amd64.iso` | `f96e9df74c3cd65d6244cf27b5446dc29cc1c15832d674439f8ca7f9ec91720a` |
+| `vendetta-fedora-amd64.iso` | `e78fd7fd96038469b38e64aabe96c8c4219e591a7b332fb1583fa0220b3b6c03` |
+| `vendetta-nixos-amd64.iso` | `04617ad4bacfeb7bbb24c20c3618966143417fa1449c90b1d2857df74feb7a68` |
+
 ## What you get
 
 **Live session:** KDE Plasma 6 on Wayland with the Vendetta theme, and an
